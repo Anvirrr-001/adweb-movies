@@ -2,6 +2,11 @@ import { movies2026 } from "@/lib/data";
 import AdBanner from "@/components/AdBanner";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+export async function generateStaticParams() {
+  return movies2026.map((movie) => ({
+    id: movie.id.toString(),
+  }));
+}
 
 export default async function MovieDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
