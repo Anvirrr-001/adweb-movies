@@ -1,12 +1,17 @@
-import { movies2026, Movie } from "@/lib/data";
+import { getMovies, Movie } from "@/lib/data";
 import AdBanner from "@/components/AdBanner";
 import Link from "next/link";
 
 export default function HomePage() {
+  const movies2026 = getMovies();
   const featuredMovie = movies2026[0];
-  const trendingMovies = movies2026.slice(1, 5);
-  const animationMovies = movies2026.filter(m => m.genre_ids.includes(16));
+  const trendingMovies = movies2026.slice(1, 4); // Show 3 trending
+  const animationMovies = movies2026.filter((m: Movie) => m.genre_ids.includes(16));
   const recentlyAdded = [...movies2026].reverse().slice(0, 4);
+
+  if (!featuredMovie) {
+    return <div className="container" style={{ padding: '10rem 0', textAlign: 'center' }}><h1>No movies available. Add some in the <Link href="/dashboard">Dashboard</Link>!</h1></div>;
+  }
 
   return (
     <div className="home-container">

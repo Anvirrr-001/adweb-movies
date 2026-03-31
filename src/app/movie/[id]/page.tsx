@@ -1,16 +1,18 @@
-import { movies2026 } from "@/lib/data";
+import { getMovies, Movie } from "@/lib/data";
 import AdBanner from "@/components/AdBanner";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
-  return movies2026.map((movie) => ({
+  const movies2026 = getMovies();
+  return movies2026.map((movie: Movie) => ({
     id: movie.id.toString(),
   }));
 }
 
 export default async function MovieDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const movies2026 = getMovies();
   const movie = movies2026.find(m => m.id === parseInt(id));
 
   if (!movie) {

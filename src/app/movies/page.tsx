@@ -1,8 +1,9 @@
-import { movies2026 } from "@/lib/data";
+import { getMovies, Movie } from "@/lib/data";
 import Link from "next/link";
 import AdBanner from "@/components/AdBanner";
 
 export default function MoviesPage() {
+  const movies2026 = getMovies();
   return (
     <div className="container" style={{ paddingTop: '2rem' }}>
       <h1 className="title-large" style={{ marginBottom: '2rem' }}>Complete 2026 Movie List</h1>
@@ -11,7 +12,7 @@ export default function MoviesPage() {
       <AdBanner slot="movies-list-top" format="auto" />
 
       <div className="grid">
-        {movies2026.map((movie) => (
+        {movies2026.map((movie: Movie) => (
           <div key={movie.id} className="movie-card">
             <Link href={`/movie/${movie.id}`}>
               <div className="poster-wrapper">
