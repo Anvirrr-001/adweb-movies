@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from "next/link";
 import { Movie } from "@/lib/data";
-import { addMovie, deleteMovie } from "@/lib/actions";
+import { addMovie, editMovie, deleteMovie } from "@/lib/actions";
 
 interface DashboardClientProps {
   initialMovies: Movie[];
@@ -13,6 +13,10 @@ export default function DashboardClient({ initialMovies }: DashboardClientProps)
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState("");
+  
+  // Edit State
+  const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +26,17 @@ export default function DashboardClient({ initialMovies }: DashboardClientProps)
     } else {
       setError("Incorrect password. Access denied.");
     }
+  };
+
+  const startEdit = (movie: Movie) => {
+    setEditingMovie(movie);
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setEditingMovie(null);
+    if (formRef.current) formRef.current.reset();
   };
 
   if (!isAuthenticated) {
@@ -84,50 +99,76 @@ export default function DashboardClient({ initialMovies }: DashboardClientProps)
         </header>
 
         <div className="dashboard-grid">
-          {/* Add Movie Form */}
+          {/* Add/Edit Movie Form */}
           <section className="form-card card-premium">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-              <h2 className="section-title" style={{ margin: 0 }}>Add New Movie</h2>
-              <span className="badge">Database Add</span>
+              <h2 className="section-title" style={{ margin: 0 }}>
+                {editingMovie ? `Editing: ${editingMovie.title}` : "Add New Movie"}
+              </h2>
+              {editingMovie ? (
+                <button onClick={cancelEdit} className="badge" style={{ cursor: 'pointer', border: 'none' }}>Cancel Edit</button>
+              ) : (
+                <span className="badge">Database Add</span>
+              )}
             </div>
-            <form action={addMovie} className="movie-form">
+            
+            <form 
+              ref={formRef}
+              action={async (formData) => {
+                if (editingMovie) {
+                  await editMovie(editingMovie.id, formData);
+                  setEditingMovie(null);
+                } else {
+                  await addMovie(formData);
+                }
+                formRef.current?.reset();
+              }} 
+              className="movie-form"
+            >
               <div className="form-group">
                 <label>Movie Title</label>
-                <input name="title" required placeholder="e.g. Inception 2" />
+                <input name="title" defaultValue={editingMovie?.title || ""} required placeholder="e.g. Inception 2" />
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label>Release Date</label>
-                  <input name="release_date" type="date" required />
+                  <input name="release_date" type="date" defaultValue={editingMovie?.release_date || ""} required />
                 </div>
                 <div className="form-group">
                   <label>Rating (0-10)</label>
-                  <input name="vote_average" type="number" step="0.1" defaultValue="8.5" />
+                  <input name="vote_average" type="number" step="0.1" defaultValue={editingMovie?.vote_average || "8.5"} />
                 </div>
               </div>
               <div className="form-group">
-                <label>Official YouTube Trailer Link</label>
-                <input name="youtube_link" required placeholder="https://www.youtube.com/watch?v=..." />
+                <label>Official YouTube Trailer Link (or ID)</label>
+                <input 
+                  name="youtube_link" 
+                  defaultValue={editingMovie ? (editingMovie.trailer_id ? `https://www.youtube.com/watch?v=${editingMovie.trailer_id}` : "") : ""} 
+                  required 
+                  placeholder="https://www.youtube.com/watch?v=..." 
+                />
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Poster Path (TMDB format: /xyz.jpg)</label>
-                  <input name="poster_path" placeholder="/bRBeSHfGHwkEpImlhxPmOcUsaeg.jpg" />
+                  <label>Poster Path (/xyz.jpg)</label>
+                  <input name="poster_path" defaultValue={editingMovie?.poster_path || ""} placeholder="/path.jpg" />
                 </div>
                 <div className="form-group">
                   <label>Backdrop Path</label>
-                  <input name="backdrop_path" placeholder="/bRBeSHfGHwkEpImlhxPmOcUsaeg.jpg" />
+                  <input name="backdrop_path" defaultValue={editingMovie?.backdrop_path || ""} placeholder="/path.jpg" />
                 </div>
               </div>
               <div className="form-group">
                 <label>Brief Overview</label>
-                <textarea name="overview" rows={3} required placeholder="What is this movie about?"></textarea>
+                <textarea name="overview" rows={3} defaultValue={editingMovie?.overview || ""} required placeholder="What is this movie about?"></textarea>
               </div>
               <div className="form-group">
                 <label>Review Article Content</label>
-                <textarea name="review_content" rows={5} placeholder="Detailed trailer breakdown and analysis for the review section..."></textarea>
+                <textarea name="review_content" rows={5} defaultValue={editingMovie?.review_content || ""} placeholder="Detailed trailer breakdown..."></textarea>
               </div>
-              <button type="submit" className="btn btn-primary w-full">Save Movie to Database</button>
+              <button type="submit" className="btn btn-primary w-full">
+                {editingMovie ? "Update Movie Content" : "Save Movie to Database"}
+              </button>
             </form>
           </section>
 
@@ -145,7 +186,7 @@ export default function DashboardClient({ initialMovies }: DashboardClientProps)
                 </thead>
                 <tbody>
                   {[...initialMovies].reverse().map(movie => (
-                    <tr key={movie.id}>
+                    <tr key={movie.id} className={editingMovie?.id === movie.id ? "editing-row" : ""}>
                       <td>
                         <div className="movie-cell">
                           <img src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} alt="" width={40} height={60} />
@@ -158,7 +199,7 @@ export default function DashboardClient({ initialMovies }: DashboardClientProps)
                       <td>{movie.release_date.split('-')[0]}</td>
                       <td className="action-col">
                         <div className="action-btns">
-                          <Link href={`/movie/${movie.id}`} className="mini-btn">Preview</Link>
+                          <button onClick={() => startEdit(movie)} className="mini-btn" style={{ background: '#25252b' }}>Edit</button>
                           <form action={async () => { await deleteMovie(movie.id); }}>
                             <button type="submit" className="mini-btn btn-danger">Delete</button>
                           </form>
@@ -174,7 +215,6 @@ export default function DashboardClient({ initialMovies }: DashboardClientProps)
       </div>
 
       <style jsx>{`
-        /* Styles are mostly inherited or defined globally, but adding specific refinements */
         .badge {
           background: rgba(229, 9, 20, 0.1);
           color: #e50914;
@@ -183,6 +223,12 @@ export default function DashboardClient({ initialMovies }: DashboardClientProps)
           font-size: 0.7rem;
           font-weight: 800;
           text-transform: uppercase;
+        }
+        .editing-row {
+          background: rgba(229, 9, 20, 0.05);
+        }
+        .mini-btn:hover {
+          background: #444;
         }
       `}</style>
     </div>
