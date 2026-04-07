@@ -103,89 +103,15 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Footer Ad Slot */}
         <AdBanner slot="home-footer" format="auto" />
       </div>
-
-      <style jsx>{`
-        .home-wrapper {
-          overflow: hidden;
-        }
-        .hero-section {
-          position: relative;
-          height: 80vh;
-          display: flex;
-          align-items: center;
-          margin-top: -80px;
-        }
-        .hero-backdrop {
-          position: absolute;
-          inset: 0;
-          z-index: -1;
-        }
-        .hero-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .hero-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to right, var(--background) 20%, transparent 60%),
-                      linear-gradient(to top, var(--background) 10%, transparent 40%);
-        }
-        .hero-content {
-          max-width: 650px;
-        }
-        .hero-title {
-          font-size: clamp(3rem, 8vw, 5rem);
-          margin: 1.5rem 0;
-          line-height: 0.9;
-        }
-        .hero-overview {
-          font-size: 1.25rem;
-          color: var(--text-secondary);
-          margin-bottom: 2.5rem;
-          line-height: 1.5;
-        }
-        .hero-actions {
-          display: flex;
-          gap: 1.5rem;
-        }
-        .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          margin-bottom: 3rem;
-          border-left: 4px solid var(--accent);
-          padding-left: 1.5rem;
-        }
-        .section-header h2 {
-          font-size: 2.5rem;
-          margin-bottom: 0.5rem;
-        }
-        .btn-sm {
-          padding: 0.6rem 1.2rem;
-          font-size: 0.85rem;
-        }
-
-        @media (max-width: 768px) {
-          .hero-section { height: 70vh; }
-          .hero-content { text-align: center; margin: 0 auto; }
-          .hero-actions { justify-content: center; flex-direction: column; }
-          .hero-overlay {
-            background: linear-gradient(to top, var(--background) 40%, rgba(6,6,8,0.4) 100%);
-          }
-          .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-        }
-      `}</style>
     </div>
   );
 }
 
 function MovieCard({ movie, badge }: { movie: Movie, badge?: 'prime' | 'trending' | 'new' }) {
   return (
-    <Link href={`/movie/${movie.id}`} className="movie-card card-premium">
+    <Link href={`/movie/${movie.id}`} className="movie-card shadow-lg">
       <div className="poster-wrapper">
         <img 
           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
@@ -215,11 +141,11 @@ function MovieCard({ movie, badge }: { movie: Movie, badge?: 'prime' | 'trending
           </div>
         )}
       </div>
-      <div className="movie-info" style={{ padding: '1.2rem' }}>
-        <h3 style={{ fontSize: '1.1rem', marginBottom: '0.4rem', color: '#fff' }}>{movie.title}</h3>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+      <div className="movie-info">
+        <h3 className="text-white font-bold">{movie.title}</h3>
+        <div className="movie-meta">
           <span>{movie.release_date.split('-')[0]}</span>
-          <span style={{ color: 'var(--gold)' }}>★ {movie.vote_average}</span>
+          <span className="text-gold">★ {movie.vote_average}</span>
         </div>
       </div>
     </Link>
