@@ -4,385 +4,265 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
-  const movies2026 = getMovies();
-  return movies2026.map((movie: Movie) => ({
+  const movies = getMovies();
+  return movies.map((movie: Movie) => ({
     id: movie.id.toString(),
   }));
 }
 
 export default async function MovieDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const movies2026 = getMovies();
-  const movie = movies2026.find(m => m.id === parseInt(id));
+  const allMovies = getMovies();
+  const movie = allMovies.find(m => m.id === parseInt(id));
 
   if (!movie) {
     notFound();
   }
 
-  const trailerUrl = movie.trailer_id 
-    ? `https://www.youtube.com/embed/${movie.trailer_id}?autoplay=0&rel=0`
-    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(movie.title + ' 2026 Trailer')}`;
+  const trailerUrl = movie.trailer_id && movie.trailer_id !== 'placeholder'
+    ? `https://www.youtube.com/embed/${movie.trailer_id}?autoplay=0&rel=0&modestbranding=1`
+    : `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(movie.title + ' Official Trailer')}`;
 
   return (
-    <div className="details-container">
-      {/* Backdrop Hero */}
-      <div 
-        className="movie-hero" 
-        style={{ backgroundImage: `url('https://image.tmdb.org/t/p/original${movie.backdrop_path}')` }}
-      ></div>
-
-      <div className="container" style={{ position: 'relative', marginTop: '-200px', zIndex: 10 }}>
-        <div className="details-content-wrapper fade-in">
-          <div className="left-col">
-            <img 
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
-              alt={movie.title} 
-              className="details-poster"
-            />
-          </div>
-          
-          <div className="right-col">
-            <AdBanner slot="movie-detail-top" format="auto" />
-            
-            <h1 className="title-large text-glow">{movie.title}</h1>
-            
-            <div className="meta-row">
-              <span className="year">{movie.release_date.split('-')[0]}</span>
-              <span className="genre-label">Official Trailer</span>
-              <span className="rating-badge">★ {movie.vote_average}</span>
+    <div className="details-page">
+      {/* Immersive Hero Header */}
+      <section className="movie-hero">
+        <div className="hero-backdrop">
+          <img 
+            src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`} 
+            alt={movie.title}
+            className="hero-img"
+          />
+          <div className="hero-overlay"></div>
+        </div>
+        
+        <div className="container hero-container">
+          <div className="hero-content animate-fade-in">
+            <div className="meta-badges">
+              <span className="badge badge-prime">Prime Video</span>
+              <span className="badge badge-trending">4K Ultra HD</span>
             </div>
-
-            <p className="overview-text">{movie.overview}</p>
-
-            <div className="action-row">
-              <a href="#trailer" className="btn btn-accent" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ marginRight: '8px' }}>▶</span> Watch Trailer
-              </a>
-              <button className="btn btn-glass">Mark as Anticipated</button>
+            <h1 className="movie-title-large text-gradient">{movie.title}</h1>
+            <div className="movie-meta-chips">
+              <span className="chip">{movie.release_date.split('-')[0]}</span>
+              <span className="chip">•</span>
+              <span className="chip gold-text">★ {movie.vote_average} Rating</span>
+              <span className="chip">•</span>
+              <span className="chip">Official Review</span>
             </div>
-
-            <AdBanner slot="movie-detail-content" format="rectangle" />
           </div>
         </div>
+      </section>
 
-        {/* Video Trailer Section */}
-        <section id="trailer" className="trailer-section">
-          <div className="section-header">
-            <h2 className="section-title">Exclusive Trailer Premiere</h2>
-            <div className="divider"></div>
-          </div>
-          
-          <div className="video-player-container">
-            <div className="video-player">
-              <iframe 
-                width="100%" 
-                height="100%" 
-                src={trailerUrl}
-                title={`${movie.title} Trailer`}
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-                style={{ borderRadius: '12px' }}
-              ></iframe>
-            </div>
-            
-            <div className="trailer-info-bar">
-              <div className="info-item">
-                <span className="label">Source:</span>
-                <span className="value">Official YouTube</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Quality:</span>
-                <span className="value">4K Ultra HD</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Category:</span>
-                <span className="value">Teaser / Trailer</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Review Article Section */}
-        {movie.review_content && (
-          <section className="review-article-section">
-            <div className="article-wrapper">
-              <div className="article-header">
-                <span className="article-tag">In-Depth Review</span>
-                <h2 className="article-title">{movie.title}: Cinematic Breakdown & Analysis</h2>
-                <div className="article-meta">
-                  <span>By AdWeb Editorial Team</span>
-                  <span>•</span>
-                  <span>Updated: {new Date().toLocaleDateString()}</span>
-                </div>
+      <div className="container main-content">
+        <div className="details-layout">
+          {/* Main Content Area */}
+          <div className="primary-content">
+            {/* Trailer Section */}
+            <section id="trailer" className="section-card">
+              <div className="section-heading-row">
+                <h2 className="text-gradient">Streaming Premiere</h2>
+                <div className="quality-indicator">Available in 2160p</div>
               </div>
               
-              <div className="article-content">
-                {movie.review_content.split('\n\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+              <div className="video-aspect-container">
+                <iframe 
+                  src={trailerUrl}
+                  title={`${movie.title} Trailer`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
               </div>
               
-              <div className="article-footer">
-                <div className="verdict">
-                  <h4>The Verdict</h4>
-                  <p>A must-watch trailer for anyone anticipating the next big cinematic event. The production values and narrative hints suggest a top-tier release.</p>
+              <div className="player-footer">
+                <div className="source-info">
+                  <span className="label">OFFICIAL SOURCE</span>
+                  <span className="value">Prime Video YouTube</span>
+                </div>
+                <div className="action-btns">
+                  <button className="btn btn-glass btn-icon">Share</button>
+                  <button className="btn btn-primary">Watch on Prime</button>
                 </div>
               </div>
+            </section>
+
+            {/* Ad Slot */}
+            <AdBanner slot="movie-detail-mid" format="auto" />
+
+            {/* Editorial Review Section */}
+            {movie.review_content && (
+              <section className="editorial-section">
+                <div className="editorial-header">
+                  <span className="accent-text">EDITORIAL BREAKDOWN</span>
+                  <h2>Why We Recommend {movie.title}</h2>
+                </div>
+                
+                <article className="editorial-body">
+                  {movie.review_content.split('\n\n').map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                  
+                  <div className="verdict-card">
+                    <h3>The Verdict</h3>
+                    <p>{movie.overview}</p>
+                    <div className="final-rating">
+                      <span className="label">PORTAL SCORE</span>
+                      <span className="value">{movie.vote_average}/10</span>
+                    </div>
+                  </div>
+                </article>
+              </section>
+            )}
+          </div>
+
+          {/* Sidebar Area */}
+          <aside className="sidebar">
+            <div className="sidebar-sticky">
+              <AdBanner slot="detail-sidebar" format="rectangle" />
+              
+              <div className="poster-card card-premium">
+                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+                <div className="poster-info">
+                  <span className="label">RELEASE DATE</span>
+                  <p>{new Date(movie.release_date).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              <AdBanner slot="detail-sidebar-bottom" format="rectangle" />
             </div>
-            
-            <div className="sidebar-ads">
-              <AdBanner slot="review-sidebar" format="rectangle" />
-            </div>
-          </section>
-        )}
+          </aside>
+        </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        .details-container {
-          padding-bottom: 5rem;
-          background: #0a0a0c;
-        }
+      <style jsx>{`
+        .details-page { padding-bottom: 5rem; }
         .movie-hero {
-          height: 75vh;
-          width: 100%;
-          background-size: cover;
-          background-position: center;
           position: relative;
+          height: 60vh;
+          display: flex;
+          align-items: center;
+          margin-top: -80px;
         }
-        .movie-hero::after {
-          content: '';
+        .hero-backdrop {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to top, #0a0a0c, transparent 60%);
+          z-index: -1;
         }
-        .details-content-wrapper {
-          display: flex;
-          gap: 4rem;
-          background: rgba(20, 20, 25, 0.6);
-          backdrop-filter: blur(40px);
-          padding: 3rem;
-          border-radius: 24px;
-          border: 1px solid rgba(255,255,255,0.08);
-          box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        .hero-img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, var(--background) 0%, rgba(6,6,8,0.3) 100%);
         }
-        .details-poster {
-          width: 350px;
-          border-radius: 16px;
-          box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-          border: 1px solid rgba(255,255,255,0.1);
+        .movie-title-large {
+          font-size: clamp(2.5rem, 6vw, 4.5rem);
+          margin: 1rem 0;
         }
-        .right-col {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-        .title-large {
-          font-size: 4rem;
-          font-weight: 900;
-          margin-bottom: 1rem;
-          line-height: 1;
-          letter-spacing: -2px;
-        }
-        .text-glow {
-          color: #fff;
-          text-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
-        }
-        .meta-row {
-          display: flex;
-          gap: 1.5rem;
-          align-items: center;
-          margin-bottom: 2.5rem;
-          color: #9ca3af;
-          font-size: 1.1rem;
-        }
-        .rating-badge {
-          background: rgba(234, 179, 8, 0.15);
-          color: #facc15;
-          padding: 6px 16px;
-          border-radius: 50px;
-          font-weight: 800;
-          border: 1px solid rgba(234, 179, 8, 0.3);
-        }
-        .year {
-          font-weight: 700;
-          color: #fff;
-        }
-        .overview-text {
-          font-size: 1.25rem;
-          line-height: 1.7;
-          color: #d1d5db;
-          margin-bottom: 3rem;
-          max-width: 800px;
-        }
-        .action-row {
-          display: flex;
-          gap: 1.5rem;
-        }
-        .btn-accent {
-          background: #e50914;
-          color: #fff;
-          font-size: 1.1rem;
-          padding: 1rem 2.5rem;
-          border-radius: 12px;
-          font-weight: 700;
-          transition: transform 0.2s, background 0.3s;
-        }
-        .btn-accent:hover {
-          background: #ff0f1a;
-          transform: translateY(-3px);
-          box-shadow: 0 10px 20px rgba(229, 9, 20, 0.4);
-        }
-        .btn-glass {
-          background: rgba(255,255,255,0.05);
-          color: #fff;
-          border: 1px solid rgba(255,255,255,0.1);
-          font-size: 1.1rem;
-          padding: 1rem 2.5rem;
-          border-radius: 12px;
-          font-weight: 700;
-          backdrop-filter: blur(10px);
-        }
-
-        /* Trailer Section */
-        .trailer-section {
-          margin-top: 6rem;
-        }
-        .section-header {
-          margin-bottom: 2.5rem;
-          text-align: center;
-        }
-        .section-title {
-          font-size: 2.5rem;
-          font-weight: 800;
-          margin-bottom: 1rem;
-        }
-        .divider {
-          width: 80px;
-          height: 4px;
-          background: #e50914;
-          margin: 0 auto;
-          border-radius: 2px;
-        }
-        .video-player-container {
-          background: #111;
-          border-radius: 24px;
-          overflow: hidden;
-          border: 1px solid rgba(255,255,255,0.05);
-          box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .video-player {
-          aspect-ratio: 16/9;
-          width: 100%;
-        }
-        .trailer-info-bar {
-          display: flex;
-          justify-content: space-around;
-          padding: 1.5rem;
-          background: #16161a;
-          border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        .info-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 5px;
-        }
-        .info-item .label {
-          font-size: 0.8rem;
-          color: #6b7280;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-        .info-item .value {
-          font-weight: 700;
-          color: #fff;
-        }
-
-        /* Review Section */
-        .review-article-section {
-          margin-top: 6rem;
-          display: grid;
-          grid-template-columns: 1fr 300px;
-          gap: 4rem;
-        }
-        .article-wrapper {
-          background: #16161a;
-          padding: 4rem;
-          border-radius: 24px;
-          border: 1px solid rgba(255,255,255,0.03);
-          line-height: 1.8;
-        }
-        .article-tag {
-          color: #e50914;
-          text-transform: uppercase;
-          font-weight: 800;
-          letter-spacing: 2px;
-          font-size: 0.9rem;
-        }
-        .article-title {
-          font-size: 2.8rem;
-          margin: 1rem 0 1.5rem;
-          line-height: 1.2;
-          font-weight: 800;
-        }
-        .article-meta {
+        .meta-badges { display: flex; gap: 0.8rem; }
+        .movie-meta-chips {
           display: flex;
           gap: 1rem;
-          color: #6b7280;
-          margin-bottom: 3rem;
-          font-size: 0.95rem;
+          color: var(--text-secondary);
+          font-weight: 600;
         }
-        .article-content {
-          font-size: 1.2rem;
-          color: #d1d5db;
+        .gold-text { color: var(--gold); }
+        
+        .details-layout {
+          display: grid;
+          grid-template-columns: 1fr 340px;
+          gap: 3rem;
+          margin-top: -8rem;
+          position: relative;
+          z-index: 20;
         }
-        .article-content p {
+        .section-card {
+          background: var(--surface);
+          border: 1px solid var(--surface-border);
+          border-radius: 24px;
+          padding: 2rem;
           margin-bottom: 2rem;
         }
-        .article-footer {
-          margin-top: 4rem;
-          padding-top: 3rem;
-          border-top: 1px solid rgba(255,255,255,0.05);
+        .section-heading-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
         }
-        .verdict {
-          background: rgba(229, 9, 20, 0.05);
-          padding: 2.5rem;
+        .quality-indicator {
+          font-size: 0.75rem;
+          font-weight: 800;
+          padding: 4px 10px;
+          border: 1px solid var(--accent);
+          color: var(--accent);
+          border-radius: 4px;
+        }
+        .video-aspect-container {
+          aspect-ratio: 16/9;
+          background: #000;
           border-radius: 16px;
-          border-left: 4px solid #e50914;
+          overflow: hidden;
+          margin-bottom: 1.5rem;
         }
-        .verdict h4 {
-          font-size: 1.5rem;
-          margin-bottom: 1rem;
-          color: #fff;
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        .player-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
+        .source-info .label {
+          display: block;
+          font-size: 0.7rem;
+          color: var(--text-muted);
+          letter-spacing: 1px;
+        }
+        .source-info .value { font-weight: 700; font-size: 0.9rem; }
+        .action-btns { display: flex; gap: 1rem; }
 
-        @media (max-width: 1100px) {
-          .details-content-wrapper {
-            flex-direction: column;
-            padding: 2rem;
-            align-items: center;
-          }
-          .details-poster {
-            width: 280px;
-            margin-top: -100px;
-          }
-          .right-col {
-            align-items: center;
-            text-align: center;
-          }
-          .title-large {
-            font-size: 3rem;
-          }
-          .review-article-section {
-            grid-template-columns: 1fr;
-          }
-          .sidebar-ads {
-            display: none;
-          }
+        .editorial-section {
+          background: var(--surface);
+          border-radius: 24px;
+          padding: 3rem;
+          border: 1px solid var(--surface-border);
         }
-      ` }} />
+        .editorial-header { margin-bottom: 2.5rem; }
+        .editorial-header h2 { font-size: 2.2rem; margin-top: 0.5rem; }
+        .accent-text { color: var(--accent); font-weight: 800; font-size: 0.8rem; letter-spacing: 2px; }
+        .editorial-body { font-size: 1.2rem; color: #d1d5db; line-height: 1.8; }
+        .editorial-body p { margin-bottom: 2rem; }
+        
+        .verdict-card {
+          background: #16161a;
+          padding: 2.5rem;
+          border-radius: 20px;
+          border-left: 4px solid var(--accent);
+        }
+        .verdict-card h3 { margin-bottom: 1rem; }
+        .final-rating { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); }
+        .final-rating .label { color: var(--text-muted); font-size: 0.8rem; font-weight: 800; }
+        .final-rating .value { font-size: 1.5rem; font-weight: 900; margin-left: 1rem; }
+
+        .sidebar-sticky { position: sticky; top: 100px; }
+        .poster-card { margin-top: 2rem; }
+        .poster-card img { width: 100%; display: block; }
+        .poster-info { padding: 1.5rem; border-top: 1px solid var(--surface-border); }
+        .poster-info .label { font-size: 0.7rem; color: var(--text-muted); font-weight: 800; }
+        .poster-info p { font-weight: 700; margin-top: 0.3rem; }
+
+        @media (max-width: 1024px) {
+          .details-layout { grid-template-columns: 1fr; }
+          .sidebar { order: -1; }
+          .sidebar-sticky { position: relative; top: 0; }
+          .poster-card { display: none; }
+        }
+        @media (max-width: 768px) {
+          .movie-hero { height: 50vh; }
+          .editorial-section { padding: 1.5rem; }
+          .player-footer { flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+          .action-btns { width: 100%; }
+          .action-btns .btn { flex: 1; }
+        }
+      `}</style>
     </div>
   );
 }

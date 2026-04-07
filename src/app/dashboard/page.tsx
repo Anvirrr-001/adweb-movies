@@ -1,4 +1,4 @@
-import { getMovies } from "@/lib/data";
+import { getMovies, getSettings } from "@/lib/data";
 import DashboardClient from "./DashboardClient";
 
 export const metadata = {
@@ -8,6 +8,7 @@ export const metadata = {
 
 export default function DashboardPage() {
   const movies = getMovies();
+  const settings = getSettings();
 
-  return <DashboardClient initialMovies={movies} />;
+  return <DashboardClient initialMovies={movies} initialSettings={settings} />;
 }

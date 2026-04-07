@@ -7,6 +7,8 @@ import { Movie } from './data';
 
 const DATA_PATH = path.join(process.cwd(), 'src/lib/movies.json');
 
+const SETTINGS_PATH = path.join(process.cwd(), 'src/lib/settings.json');
+
 function readData(): Movie[] {
   try {
     const data = fs.readFileSync(DATA_PATH, 'utf-8');
@@ -18,6 +20,18 @@ function readData(): Movie[] {
 
 function writeData(data: Movie[]) {
   fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+function readSettings() {
+  try {
+    return JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf-8'));
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeSettings(settings: any) {
+  fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2), 'utf-8');
 }
 
 export async function addMovie(formData: FormData) {
@@ -79,6 +93,22 @@ export async function deleteMovie(id: number) {
   const updatedMovies = currentMovies.filter(m => m.id !== id);
   writeData(updatedMovies);
   
+  revalidatePath('/');
+  revalidatePath('/movies');
+  revalidatePath('/dashboard');
+}
+
+export async function updateSettings(formData: FormData) {
+  const settings = readSettings();
+  if (!settings) return;
+
+  settings.adsterra.enabled = formData.get('adsterra_enabled') === 'on';
+  settings.adsterra.scripts.social_bar = formData.get('adsterra_social_bar') as string;
+  settings.adsterra.scripts.popunder = formData.get('adsterra_popunder') as string;
+  settings.adsterra.verification_tag = formData.get('adsterra_verification') as string;
+  settings.site.ads_txt = formData.get('ads_txt') as string;
+
+  writeSettings(settings);
   revalidatePath('/');
   revalidatePath('/movies');
   revalidatePath('/dashboard');

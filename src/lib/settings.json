@@ -1,0 +1,16 @@
+{
+  "adsterra": {
+    "enabled": true,
+    "scripts": {
+      "social_bar": "",
+      "popunder": "",
+      "native_banner": ""
+    },
+    "verification_tag": ""
+  },
+  "site": {
+    "title": "MOVIES2026",
+    "description": "Premium Movie Trailer Portal",
+    "ads_txt": ""
+  }
+}

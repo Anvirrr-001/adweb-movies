@@ -1,109 +1,101 @@
-import type { Metadata } from "next";
+import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
+import { siteSettings } from "@/lib/data";
 
-export const metadata: Metadata = {
-  title: "Movies 2026 | New Releases & Reviews",
-  description: "Explore the latest 2026 movie releases, official trailers, and exclusive reviews. Stay updated with the newest cinema trends.",
-  keywords: ["Movies 2026", "Latest Trailers", "Movie Reviews", "Upcoming Cinema"],
-  authors: [{ name: "AdWeb Movie Portal" }],
-  openGraph: {
-    title: "Movies 2026 | New Releases & Reviews",
-    description: "Your ultimate portal for 2026 cinema releases and trailers.",
-    type: "website",
-    locale: "en_US",
-  },
+const outfit = Outfit({ 
+  subsets: ["latin"], 
+  weight: ["400", "600", "700", "900"],
+  variable: '--font-outfit'
+});
+
+const inter = Inter({ 
+  subsets: ["latin"], 
+  variable: '--font-inter'
+});
+
+export const metadata = {
+  title: "MOVIES2026 | Professional Trailer Portal",
+  description: "Experience the future of cinema with high-fidelity movie trailers and in-depth reviews. Prime Originals and 4K streaming previews.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const { adsterra } = siteSettings;
+
   return (
     <html lang="en">
       <head>
-        {/* Google AdSense Global Script */}
-        <script 
-          async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" 
-          crossOrigin="anonymous"
-        ></script>
-      </head>
-      <body>
-        <header className="glass-nav">
-          <div className="container nav-content">
-            <h1 className="logo">MOVIES<span>2026</span></h1>
-            <nav>
-              <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/movies">Movies</a></li>
-                <li><a href="/about">About</a></li>
-              </ul>
-            </nav>
-          </div>
-        </header>
+        {/* Adsterra Verification */}
+        {adsterra.enabled && adsterra.verification_tag && (
+          <div dangerouslySetInnerHTML={{ __html: adsterra.verification_tag }} />
+        )}
         
-        <main>{children}</main>
+        {/* Adsterra Popunder */}
+        {adsterra.enabled && adsterra.scripts.popunder && (
+          <div dangerouslySetInnerHTML={{ __html: adsterra.scripts.popunder }} />
+        )}
+      </head>
+      <body className={`${outfit.variable} ${inter.variable} antialiased`}>
+        <nav className="navbar">
+          <div className="container nav-flex">
+            <Link href="/" className="brand">
+              <span className="logo-text">ADWEB</span>
+              <span className="portal-text">PORTAL</span>
+            </Link>
+            
+            <div className="nav-links">
+              <Link href="/" className="nav-item">Premiere</Link>
+              <Link href="/movies" className="nav-item">Database</Link>
+              <Link href="/dashboard" className="nav-item nav-admin">Control Panel</Link>
+            </div>
+            
+            <button className="mobile-menu-btn">☰</button>
+          </div>
+        </nav>
 
-        <footer className="footer-premium">
-          <div className="container">
-            <p>&copy; 2026 AdWeb Movie Portal. All movie data provided by TMDB. This is a review platform for entertainment purposes.</p>
+        <main className="main-layout">
+          {children}
+        </main>
+
+        <footer className="footer-professional">
+          <div className="container footer-grid">
+            <div className="footer-brand">
+              <div className="brand">
+                <span className="logo-text">ADWEB</span>
+                <span className="portal-text">PORTAL</span>
+              </div>
+              <p>The world's leading destination for high-fidelity movie trailers and cinematic reviews.</p>
+            </div>
+            
+            <div className="footer-section">
+              <h4>Platform</h4>
+              <Link href="/movies">Movie Database</Link>
+              <Link href="/">Release Calendar</Link>
+              <Link href="/dashboard">Admin Login</Link>
+            </div>
+
+            <div className="footer-section">
+              <h4>Legal</h4>
+              <Link href="/privacy">Privacy Policy</Link>
+              <Link href="/terms">Terms of Service</Link>
+              <Link href="/dmca">Digital Millennium Act</Link>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <div className="container">
+              <p>&copy; {new Date().getFullYear()} ADWEB CINEMATIC. ALL RIGHTS RESERVED. POWERED BY STERRA-SYSTEMS.</p>
+            </div>
           </div>
         </footer>
-        
-        <style dangerouslySetInnerHTML={{ __html: `
-          .glass-nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(10, 10, 12, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 1rem 0;
-          }
-          .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
-          .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #fff;
-          }
-          .logo span {
-            color: var(--accent, #e50914);
-          }
-          nav ul {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-          }
-          nav a {
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-            color: #a0a0a5;
-          }
-          nav a:hover {
-            color: #fff;
-          }
-          main {
-            padding-top: 5rem;
-            min-height: calc(100vh - 100px);
-          }
-          .footer-premium {
-            padding: 3rem 0;
-            background: #050507;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 5rem;
-            text-align: center;
-            color: #555;
-            font-size: 0.8rem;
-          }
-        ` }} />
+
+        {/* Adsterra Social Bar */}
+        {adsterra.enabled && adsterra.scripts.social_bar && (
+          <div dangerouslySetInnerHTML={{ __html: adsterra.scripts.social_bar }} />
+        )}
       </body>
     </html>
   );
