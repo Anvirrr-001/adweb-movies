@@ -21,10 +21,7 @@ export interface SiteSettings {
       social_bar: string;
       popunder: string;
       native_banner: string;
-      home_mid: string;
-      archive_bottom: string;
-      movie_sidebar_top: string;
-      movie_sidebar_bottom: string;
+      banner_300x250: string;
     },
     verification_tag: string;
   };

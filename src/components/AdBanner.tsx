@@ -19,11 +19,11 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
       // Find the specific script for this slot from settings
       let nativeScript = "";
       
-      if (slot === 'home-mid') nativeScript = settings.adsterra.scripts.home_mid;
-      else if (slot === 'archive-bottom') nativeScript = settings.adsterra.scripts.archive_bottom;
-      else if (slot === 'detail-sidebar-top') nativeScript = settings.adsterra.scripts.movie_sidebar_top;
-      else if (slot === 'detail-sidebar-bottom') nativeScript = settings.adsterra.scripts.movie_sidebar_bottom;
-      else if (slot.includes('native')) nativeScript = settings.adsterra.scripts.native_banner;
+      if (slot === 'home-mid' || slot === 'archive-bottom' || slot.includes('native')) {
+        nativeScript = settings.adsterra.scripts.native_banner || "";
+      } else if (slot === 'detail-sidebar-top' || slot === 'detail-sidebar-bottom' || slot.includes('sidebar')) {
+        nativeScript = settings.adsterra.scripts.banner_300x250 || "";
+      }
 
       if (nativeScript) {
         const scriptContainer = document.createElement('div');

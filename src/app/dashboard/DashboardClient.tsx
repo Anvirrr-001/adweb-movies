@@ -255,12 +255,12 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                 </div>
 
                 <div className="panel-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
-                  {/* Left Column: Direct Links & Global Scripts */}
+                  {/* Left Column: Direct Links & Background Ads */}
                   <div className="column">
                     <section className="card-premium glass" style={{ marginBottom: '32px' }}>
                       <div style={{ padding: '24px' }}>
                         <h3 style={{ marginBottom: '16px', color: 'var(--accent)' }}>🚀 Direct Link (Download Master)</h3>
-                        <p className="hint" style={{ marginBottom: '20px' }}>Paste your High-Converting Direct Link here. It will be applied to all "Download" buttons on movie pages.</p>
+                        <p className="hint" style={{ marginBottom: '20px' }}>Paste your High-Converting Direct Link here. It will be applied to all "Download" and "Play" buttons across the site.</p>
                         <div className="form-group">
                           <label>Adsterra Direct Link URL</label>
                           <input 
@@ -275,32 +275,37 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
 
                     <section className="card-premium glass">
                       <div style={{ padding: '24px' }}>
-                        <h3 style={{ marginBottom: '16px' }}>🛠️ Global Scripts</h3>
+                        <h3 style={{ marginBottom: '16px' }}>💥 Background & Popups</h3>
                         <div className="form-group">
-                          <label>Popunder Script</label>
-                          <textarea name="adsterra_popunder" rows={4} defaultValue={initialSettings.adsterra.scripts.popunder} placeholder="Paste Popunder code here..."></textarea>
+                          <label>Popunder</label>
+                          <textarea name="adsterra_popunder" rows={5} defaultValue={initialSettings.adsterra.scripts?.popunder} placeholder="Paste Popunder script here..."></textarea>
                           <p className="hint">Loads in the background when users click anywhere.</p>
                         </div>
                         <div className="form-group" style={{ marginTop: '20px' }}>
-                          <label>Social Bar Script</label>
-                          <textarea name="adsterra_social_bar" rows={4} defaultValue={initialSettings.adsterra.scripts.social_bar} placeholder="Paste Social Bar code here..."></textarea>
-                          <p className="hint">Floating sticky bar at the bottom or corners.</p>
+                          <label>Social Bar</label>
+                          <textarea name="adsterra_social_bar" rows={5} defaultValue={initialSettings.adsterra.scripts?.social_bar} placeholder="Paste Social Bar script here..."></textarea>
+                          <p className="hint">Floating sticky bar placed automatically on the screen.</p>
                         </div>
                       </div>
                     </section>
                   </div>
 
-                  {/* Right Column: Placements & Banners */}
+                  {/* Right Column: Display Ads */}
                   <div className="column">
                     <section className="card-premium glass" style={{ marginBottom: '32px' }}>
                       <div style={{ padding: '24px' }}>
-                        <h3 style={{ marginBottom: '16px' }}>💠 Placement Slots (Native / Banners)</h3>
-                        <p className="hint" style={{ marginBottom: '20px' }}>Configure where specifically your banner and native ads appear.</p>
+                        <h3 style={{ marginBottom: '16px' }}>🖼️ Display Banners</h3>
                         
                         <div className="form-group">
-                          <label>Universal Ad Code (Shows Everywhere)</label>
-                          <textarea name="adsterra_universal" rows={8} defaultValue={initialSettings.adsterra.scripts.native_banner || initialSettings.adsterra.scripts.home_mid} placeholder="Paste Adsterra Native/Banner code..."></textarea>
-                          <p className="hint">This exact ad script will be automatically injected into all banner slots across the Homepage, Archives, and Movie Detail sidebars.</p>
+                          <label>Native Banner</label>
+                          <textarea name="adsterra_native_banner" rows={5} defaultValue={initialSettings.adsterra.scripts?.native_banner} placeholder="Paste Native Banner script here..."></textarea>
+                          <p className="hint">Automatically injected into full-width content blocks (Homepage, Archives).</p>
+                        </div>
+
+                        <div className="form-group" style={{ marginTop: '24px' }}>
+                          <label>Banner 300x250</label>
+                          <textarea name="adsterra_banner_300x250" rows={5} defaultValue={initialSettings.adsterra.scripts?.banner_300x250} placeholder="Paste Banner 300x250 script here..."></textarea>
+                          <p className="hint">Automatically injected into block sidebars (Movie Detail sidebars).</p>
                         </div>
                       </div>
                     </section>
