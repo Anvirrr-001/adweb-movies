@@ -119,11 +119,15 @@ export async function updateSettings(formData: FormData) {
   settings.adsterra.direct_link = formData.get('adsterra_direct_link') as string;
   settings.adsterra.scripts.social_bar = formData.get('adsterra_social_bar') as string;
   settings.adsterra.scripts.popunder = formData.get('adsterra_popunder') as string;
-  settings.adsterra.scripts.native_banner = formData.get('adsterra_native_banner') as string;
-  settings.adsterra.scripts.home_mid = formData.get('adsterra_home_mid') as string;
-  settings.adsterra.scripts.archive_bottom = formData.get('adsterra_archive_bottom') as string;
-  settings.adsterra.scripts.movie_sidebar_top = formData.get('adsterra_movie_sidebar_top') as string;
-  settings.adsterra.scripts.movie_sidebar_bottom = formData.get('adsterra_movie_sidebar_bottom') as string;
+  const universalBanner = formData.get('adsterra_universal') as string;
+
+  if (universalBanner !== null && universalBanner !== undefined) {
+    settings.adsterra.scripts.native_banner = universalBanner;
+    settings.adsterra.scripts.home_mid = universalBanner;
+    settings.adsterra.scripts.archive_bottom = universalBanner;
+    settings.adsterra.scripts.movie_sidebar_top = universalBanner;
+    settings.adsterra.scripts.movie_sidebar_bottom = universalBanner;
+  }
   settings.adsterra.verification_tag = formData.get('adsterra_verification') as string;
   settings.site.ads_txt = formData.get('ads_txt') as string;
 

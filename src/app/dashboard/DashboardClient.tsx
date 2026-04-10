@@ -298,23 +298,9 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                         <p className="hint" style={{ marginBottom: '20px' }}>Configure where specifically your banner and native ads appear.</p>
                         
                         <div className="form-group">
-                          <label>Homepage (Mid-Grid)</label>
-                          <textarea name="adsterra_home_mid" rows={3} defaultValue={initialSettings.adsterra.scripts.home_mid} placeholder="Paste Native/Banner code..."></textarea>
-                        </div>
-
-                        <div className="form-group" style={{ marginTop: '16px' }}>
-                          <label>Movie Details (Sidebar Top)</label>
-                          <textarea name="adsterra_movie_sidebar_top" rows={3} defaultValue={initialSettings.adsterra.scripts.movie_sidebar_top} placeholder="Paste Banner code..."></textarea>
-                        </div>
-
-                        <div className="form-group" style={{ marginTop: '16px' }}>
-                          <label>Movie Details (Sidebar Bottom)</label>
-                          <textarea name="adsterra_movie_sidebar_bottom" rows={3} defaultValue={initialSettings.adsterra.scripts.movie_sidebar_bottom} placeholder="Paste Banner code..."></textarea>
-                        </div>
-
-                        <div className="form-group" style={{ marginTop: '16px' }}>
-                          <label>Archive Page (Bottom Grid)</label>
-                          <textarea name="adsterra_archive_bottom" rows={3} defaultValue={initialSettings.adsterra.scripts.archive_bottom} placeholder="Paste Native code..."></textarea>
+                          <label>Universal Ad Code (Shows Everywhere)</label>
+                          <textarea name="adsterra_universal" rows={8} defaultValue={initialSettings.adsterra.scripts.native_banner || initialSettings.adsterra.scripts.home_mid} placeholder="Paste Adsterra Native/Banner code..."></textarea>
+                          <p className="hint">This exact ad script will be automatically injected into all banner slots across the Homepage, Archives, and Movie Detail sidebars.</p>
                         </div>
                       </div>
                     </section>
