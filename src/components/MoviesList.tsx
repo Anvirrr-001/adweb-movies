@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Movie } from "@/lib/data";
+import { Movie } from "@/lib/types";
 import AdBanner from "@/components/AdBanner";
 
 interface MoviesListProps {
@@ -11,6 +11,7 @@ interface MoviesListProps {
 
 export default function MoviesList({ initialMovies }: MoviesListProps) {
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const genres = [
     { id: 28, name: "Action" },
@@ -18,103 +19,110 @@ export default function MoviesList({ initialMovies }: MoviesListProps) {
     { id: 35, name: "Comedy" },
     { id: 53, name: "Thriller" },
     { id: 10749, name: "Romance" },
+    { id: 878, name: "Sci-Fi" }
   ];
 
   const filteredMovies = useMemo(() => {
-    if (!selectedGenre) return initialMovies;
-    return initialMovies.filter(m => m.genre_ids.includes(selectedGenre));
-  }, [selectedGenre, initialMovies]);
+    let results = initialMovies;
+    if (selectedGenre) {
+      results = results.filter(m => m.genre_ids.includes(selectedGenre));
+    }
+    if (searchQuery) {
+      results = results.filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+    return results;
+  }, [selectedGenre, searchQuery, initialMovies]);
 
   return (
-    <>
-      {/* Header Section */}
-      <section className="explore-header">
-        <div className="container">
-          <div className="header-flex animate-fade-in">
-            <div className="header-text">
-              <span className="accent-text text-uppercase">Cinematic Database</span>
-              <h1 className="text-gradient">Explore New Releases</h1>
-              <p className="text-secondary">Discover the most highly anticipated movie trailers and in-depth reviews from the 2026 season.</p>
-            </div>
-            
-            <div className="search-box-placeholder">
-              <div className="input-with-icon">
-                <span className="icon">🔍</span>
-                <input type="text" placeholder="Search trailers..." className="input-field" readOnly />
-              </div>
-            </div>
-          </div>
-
-          <div className="genre-filter-row animate-fade-in">
-            <button 
-              className={`genre-btn ${selectedGenre === null ? 'active' : ''}`}
-              onClick={() => setSelectedGenre(null)}
-            >
-              All Featured
-            </button>
-            {genres.map(g => (
-              <button 
-                key={g.id}
-                className={`genre-btn ${selectedGenre === g.id ? 'active' : ''}`}
-                onClick={() => setSelectedGenre(g.id)}
-              >
-                {g.name}
-              </button>
-            ))}
-          </div>
+    <div className="section-wrapper" style={{ paddingTop: '40px' }}>
+      <div className="row-header" style={{ marginBottom: '48px' }}>
+        <div style={{ flex: 1 }}>
+          <h2 className="font-heading" style={{ fontSize: '32px' }}>Cinematic Registry</h2>
+          <p style={{ color: 'var(--text-muted)' }}>Explore the encrypted database of upcoming 2026 productions.</p>
         </div>
-      </section>
-
-      <div className="container content-section">
-        <AdBanner slot="movies-list-top" format="auto" />
-
-        <div className="results-info">
-          <span className="text-muted">Showing {filteredMovies.length} Trailers</span>
-          <div className="divider"></div>
+        
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+           <div className="search-unit" style={{ display: 'block', maxWidth: '300px' }}>
+              <span className="search-icon">🔍</span>
+              <input 
+                type="text" 
+                placeholder="Search archive..." 
+                className="search-input" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ background: 'var(--surface)', border: '1px solid var(--surface-border)' }}
+              />
+           </div>
         </div>
-
-        <div className="movie-grid">
-          {filteredMovies.map((movie: Movie) => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
-        </div>
-
-        <AdBanner slot="movies-list-bottom" format="auto" />
       </div>
-    </>
+
+      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', marginBottom: '40px', paddingBottom: '10px' }}>
+        <button 
+          className={`genre-chip ${selectedGenre === null ? 'active' : ''}`}
+          onClick={() => setSelectedGenre(null)}
+          style={{ 
+            background: selectedGenre === null ? 'var(--accent)' : 'var(--surface-raised)', 
+            color: selectedGenre === null ? '#fff' : 'var(--text-secondary)',
+            border: 'none', padding: '10px 20px', borderRadius: '50px', fontWeight: 700, fontSize: '13px', cursor: 'pointer',
+            transition: '0.3s'
+          }}
+        >
+          All Categories
+        </button>
+        {genres.map(g => (
+          <button 
+            key={g.id}
+            className={`genre-chip ${selectedGenre === g.id ? 'active' : ''}`}
+            onClick={() => setSelectedGenre(g.id)}
+            style={{ 
+              background: selectedGenre === g.id ? 'var(--accent)' : 'var(--surface-raised)', 
+              color: selectedGenre === g.id ? '#fff' : 'var(--text-secondary)',
+              border: 'none', padding: '10px 20px', borderRadius: '50px', fontWeight: 700, fontSize: '13px', cursor: 'pointer',
+              transition: '0.3s'
+            }}
+          >
+            {g.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="movie-grid">
+        {filteredMovies.map((movie: Movie) => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+      </div>
+
+      {filteredMovies.length === 0 && (
+         <div style={{ textAlign: 'center', padding: '120px 0', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '24px', fontWeight: 700 }}>No matching productions found in local database.</p>
+            <button onClick={() => {setSearchQuery(""); setSelectedGenre(null);}} className="btn btn-glass" style={{ marginTop: '24px' }}>Clear All Filters</button>
+         </div>
+      )}
+
+      <div style={{ marginTop: '80px' }}>
+         <AdBanner slot="archive-bottom-native" format="fluid" />
+      </div>
+    </div>
   );
 }
 
 function MovieCard({ movie }: { movie: Movie }) {
+  const year = movie.release_date.split('-')[0];
+
   return (
-    <Link href={`/movie/${movie.id}`} className="movie-card shadow-lg">
-      <div className="poster-wrapper">
+    <Link href={`/movie/${movie.id}`} className="movie-card shadow-sm">
+      <div className="card-poster">
         <img 
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
+          src={movie.poster_path} 
           alt={movie.title} 
           loading="lazy"
         />
         <div className="card-overlay">
-          <div className="play-icon" style={{ 
-            fontSize: '1.5rem', 
-            background: '#fff', 
-            color: '#000', 
-            width: '40px', 
-            height: '40px', 
-            borderRadius: '50%', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            margin: '0 auto 1.5rem'
-          }}>▶</div>
-          <span className="btn btn-outline btn-sm w-full" style={{ fontSize: '0.8rem', padding: '0.6rem' }}>View Trailer</span>
-        </div>
-      </div>
-      <div className="movie-info">
-        <h3 className="text-white font-bold">{movie.title}</h3>
-        <div className="movie-meta">
-          <span>{movie.release_date.split('-')[0]}</span>
-          <span className="text-gold">★ {movie.vote_average}</span>
+          <div className="card-title">{movie.title}</div>
+          <div className="card-badges">
+             <span className="badge badge-hd">HDR</span>
+             <span className="badge">{year}</span>
+          </div>
         </div>
       </div>
     </Link>

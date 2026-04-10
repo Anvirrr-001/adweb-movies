@@ -1,4 +1,4 @@
-import { getMovies } from "@/lib/data";
+import { getMovies } from "@/lib/data.server";
 import MoviesList from "@/components/MoviesList";
 
 export const metadata = {

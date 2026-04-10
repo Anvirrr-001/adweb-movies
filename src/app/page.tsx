@@ -1,151 +1,91 @@
-import { getMovies, Movie } from "@/lib/data";
+import { getMovies } from "@/lib/data.server";
+import { Movie } from "@/lib/types";
 import AdBanner from "@/components/AdBanner";
 import Link from "next/link";
 
 export default function HomePage() {
   const allMovies = getMovies();
   
-  // Categorize movies
-  const featuredMovie = allMovies.find(m => m.id === 2) || allMovies[0]; // Avengers as default hero
-  const primeOriginals = allMovies.filter(m => [10, 11, 12, 13, 16, 17].includes(m.id));
-  const trendingMovies = allMovies.filter(m => [1, 4, 14, 15, 21].includes(m.id));
-  const animationMovies = allMovies.filter((m: Movie) => m.genre_ids.includes(16));
-  const latestReviews = [...allMovies].reverse().slice(0, 4);
+  if (allMovies.length === 0) return null;
 
-  if (!featuredMovie) {
-    return (
-      <div className="container" style={{ padding: '10rem 0', textAlign: 'center' }}>
-        <h1>No movies available. Add some in the Dashbaord!</h1>
-      </div>
-    );
-  }
+  const spotlightMovie = allMovies[1]; // Avengers: Doomsday
 
   return (
-    <div className="home-wrapper">
-      {/* Dynamic Hero Section */}
-      <section className="hero-section">
-        <div className="hero-backdrop">
-          <img 
-            src={`https://image.tmdb.org/t/p/original${featuredMovie.backdrop_path}`} 
-            alt={featuredMovie.title}
-            className="hero-img"
-          />
-          <div className="hero-overlay"></div>
-        </div>
-        
-        <div className="container">
-          <div className="hero-content animate-fade-in">
-            <span className="badge badge-trending">Trending Now</span>
-            <h1 className="hero-title">{featuredMovie.title}</h1>
-            <p className="hero-overview">{featuredMovie.overview}</p>
-            <div className="hero-actions">
-              <Link href={`/movie/${featuredMovie.id}`} className="btn btn-primary">
-                ▶ Watch Official Trailer
+    <div className="home-viewport">
+      {/* Cinematic Hero Spotlight */}
+      <section className="hero-carousel">
+        <div className="hero-slide">
+          <div className="hero-backdrop">
+            <img 
+              src={spotlightMovie.backdrop_path} 
+              alt={spotlightMovie.title}
+              loading="eager"
+            />
+          </div>
+          <div className="hero-content">
+            <div className="hero-label">🔥 Must Watch for 2026</div>
+            <h1 className="hero-title">{spotlightMovie.title}</h1>
+            <div className="hero-meta">
+              <span style={{ color: 'var(--accent)' }}>★ {spotlightMovie.vote_average} Registry Score</span>
+              <span>UHD 4K</span>
+              <span>Sci-Fi / Action</span>
+            </div>
+            <div style={{ display: 'flex', gap: '16px' }}>
+              <Link href={`/movie/${spotlightMovie.id}`} className="btn btn-primary">
+                <span>▶ Watch Official Trailer</span>
               </Link>
-              <Link href={`/movie/${featuredMovie.id}`} className="btn btn-glass">
-                Read Full Review
-              </Link>
+              <button className="btn btn-glass">
+                <span>📁 View Technical Report</span>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="container main-content">
-        {/* Top Ad Slot */}
-        <AdBanner slot="home-top" format="auto" />
+      {/* Main Database Grid */}
+      <section className="section-wrapper">
+        <div className="row-header">
+          <div style={{ flex: 1 }}>
+            <h2 className="row-title">Registry Database: <span style={{ color: 'var(--accent)' }}>2026 Phase</span></h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '4px' }}>Latest cinematic entries encrypted in our archive.</p>
+          </div>
+          <button className="btn btn-glass btn-sm" style={{ padding: '8px 16px', fontSize: '13px' }}>
+            Filter Archive
+          </button>
+        </div>
 
-        {/* Prime Originals Section */}
-        <section className="section-padding">
-          <div className="section-header">
-            <div>
-              <h2 className="text-gradient">Prime Video Originals</h2>
-              <p className="text-secondary">Exclusive trailers from Amazon MGM Studios</p>
-            </div>
-            <Link href="/movies" className="btn btn-outline btn-sm">Explore All</Link>
-          </div>
-          <div className="movie-grid">
-            {primeOriginals.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} badge="prime" />
-            ))}
-          </div>
-        </section>
+        <div className="movie-grid">
+          {allMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
 
-        {/* Middle Ad Slot */}
-        <AdBanner slot="home-mid" format="fluid" />
-
-        {/* Trending Section */}
-        <section className="section-padding">
-          <div className="section-header">
-            <div>
-              <h2 className="text-gradient">Highly Anticipated</h2>
-              <p className="text-secondary">Trailers everyone is talking about</p>
-            </div>
-          </div>
-          <div className="movie-grid">
-            {trendingMovies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} badge="trending" />
-            ))}
-          </div>
-        </section>
-
-        {/* Animation Favorites */}
-        <section className="section-padding">
-          <div className="section-header">
-            <div>
-              <h2 className="text-gradient">Latest Animation</h2>
-              <p className="text-secondary">Fun for the whole family</p>
-            </div>
-          </div>
-          <div className="movie-grid">
-            {animationMovies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
-          </div>
-        </section>
-
-        <AdBanner slot="home-footer" format="auto" />
-      </div>
+        {/* Global Ad Slot */}
+        <div style={{ marginTop: '60px' }}>
+          <AdBanner slot="home-bottom-native" format="fluid" />
+        </div>
+      </section>
     </div>
   );
 }
 
-function MovieCard({ movie, badge }: { movie: Movie, badge?: 'prime' | 'trending' | 'new' }) {
+function MovieCard({ movie }: { movie: Movie }) {
+  const year = movie.release_date.split('-')[0];
+
   return (
-    <Link href={`/movie/${movie.id}`} className="movie-card shadow-lg">
-      <div className="poster-wrapper">
+    <Link href={`/movie/${movie.id}`} className="movie-card shadow-sm">
+      <div className="card-poster">
         <img 
-          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
+          src={movie.poster_path} 
           alt={movie.title} 
           loading="lazy"
         />
         <div className="card-overlay">
-          <div className="play-icon" style={{ 
-            fontSize: '2rem', 
-            background: '#fff', 
-            color: '#000', 
-            width: '50px', 
-            height: '50px', 
-            borderRadius: '50%', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            margin: '0 auto 1rem'
-          }}>▶</div>
-          <span className="btn btn-primary btn-sm w-full">Watch Trailer</span>
-        </div>
-        {badge && (
-          <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
-            <span className={`badge badge-${badge}`}>
-              {badge === 'prime' ? 'Prime Original' : badge.toUpperCase()}
-            </span>
+          <div className="card-title">{movie.title}</div>
+          <div className="card-badges">
+             <span className="badge badge-hd">HDR</span>
+             <span className="badge">{year}</span>
           </div>
-        )}
-      </div>
-      <div className="movie-info">
-        <h3 className="text-white font-bold">{movie.title}</h3>
-        <div className="movie-meta">
-          <span>{movie.release_date.split('-')[0]}</span>
-          <span className="text-gold">★ {movie.vote_average}</span>
         </div>
       </div>
     </Link>

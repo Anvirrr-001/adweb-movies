@@ -1,4 +1,4 @@
-import { getMovies, getSettings } from "@/lib/data";
+import { getMovies, getSettings } from "@/lib/data.server";
 import DashboardClient from "./DashboardClient";
 
 export const metadata = {

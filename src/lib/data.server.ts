@@ -1,39 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-
-export interface Movie {
-  id: number;
-  title: string;
-  poster_path: string;
-  backdrop_path: string;
-  release_date: string;
-  vote_average: number;
-  overview: string;
-  genre_ids: number[];
-  trailer_id?: string;
-  review_content?: string;
-}
+import { Movie, SiteSettings } from './types';
 
 const DATA_PATH = path.join(process.cwd(), 'src/lib/movies.json');
-
 const SETTINGS_PATH = path.join(process.cwd(), 'src/lib/settings.json');
-
-export interface SiteSettings {
-  adsterra: {
-    enabled: boolean;
-    scripts: {
-      social_bar: string;
-      popunder: string;
-      native_banner: string;
-    },
-    verification_tag: string;
-  };
-  site: {
-    title: string;
-    description: string;
-    ads_txt: string;
-  };
-}
 
 export function getMovies(): Movie[] {
   try {
@@ -58,5 +28,6 @@ export function getSettings(): SiteSettings {
   }
 }
 
-export const movies2026: Movie[] = getMovies();
-export const siteSettings: SiteSettings = getSettings();
+// These are meant to be used in server components only
+export const movies2026 = getMovies();
+export const siteSettings = getSettings();

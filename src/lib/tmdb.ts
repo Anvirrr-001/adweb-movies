@@ -4,7 +4,7 @@ const BASE_URL = "https://api.themoviedb.org/3";
 export async function getUpcomingMovies() {
   // For now, if no key, we use our mock data
   if (TMDB_API_KEY === "YOUR_TMDB_API_KEY") {
-    const { movies2026 } = await import("./data");
+    const { movies2026 } = await import("./data.server");
     return movies2026;
   }
 
@@ -19,14 +19,14 @@ export async function getUpcomingMovies() {
     return data.results;
   } catch (error) {
     console.error("TMDB error:", error);
-    const { movies2026 } = await import("./data");
+    const { movies2026 } = await import("./data.server");
     return movies2026;
   }
 }
 
 export async function getMovieDetails(id: number) {
    if (TMDB_API_KEY === "YOUR_TMDB_API_KEY") {
-    const { movies2026 } = await import("./data");
+    const { movies2026 } = await import("./data.server");
     return movies2026.find(m => m.id === id);
   }
 
@@ -40,7 +40,7 @@ export async function getMovieDetails(id: number) {
     return await res.json();
   } catch (error) {
     console.error("TMDB error:", error);
-    const { movies2026 } = await import("./data");
+    const { movies2026 } = await import("./data.server");
     return movies2026.find(m => m.id === id);
   }
 }

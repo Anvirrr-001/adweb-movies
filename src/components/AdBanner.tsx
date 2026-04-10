@@ -1,48 +1,52 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import { useSettings } from "@/components/SiteSettingsProvider";
 
 interface AdBannerProps {
   slot: string;
   format?: 'auto' | 'fluid' | 'rectangle';
   style?: React.CSSProperties;
-  customScriptId?: string; // For Adsterra IDs or other custom script keys
 }
 
-const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style, customScriptId }) => {
+const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => {
   const adRef = useRef<HTMLDivElement>(null);
+  const settings = useSettings();
+  const isEnabled = settings.adsterra.enabled;
 
   useEffect(() => {
-    // If it's a standard AdSense unit
-    if (!customScriptId) {
-      try {
-        // @ts-ignore
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (err) {
-        // Silent catch for dev environment
+    if (isEnabled && adRef.current) {
+      const nativeScript = settings.adsterra.scripts.native_banner;
+      
+      // We only inject native banner script if it exists and we're in specific slots
+      if (nativeScript && (slot === 'home-mid' || slot === 'archive-bottom' || slot.includes('detail'))) {
+        const scriptContainer = document.createElement('div');
+        scriptContainer.innerHTML = nativeScript;
+        
+        // Find and execute scripts if any
+        const scripts = scriptContainer.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          oldScript.parentNode?.replaceChild(newScript, oldScript);
+        });
+
+        adRef.current.innerHTML = '';
+        adRef.current.appendChild(scriptContainer);
       }
     }
-  }, [customScriptId]);
+  }, [slot, isEnabled, settings.adsterra.scripts.native_banner]);
+
+  if (!isEnabled) return null;
 
   return (
-    <div className="ad-container" style={{ margin: '2rem 0', width: '100%', ...style }}>
-      <div className="ad-label">SPONSORED</div>
-      <div className="ad-box" ref={adRef}>
-        {!customScriptId ? (
-          <ins
-            className="adsbygoogle"
-            style={{ display: 'block' }}
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot={slot}
-            data-ad-format={format}
-            data-full-width-responsive="true"
-          ></ins>
-        ) : (
-          <div className="custom-ad-placeholder">
-            {/* Custom script will be injected here if we use a global manager */}
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Adsterra Active: {slot}</span>
-          </div>
-        )}
+    <div className="ad-container" style={{ margin: '2.5rem 0', width: '100%', ...style }}>
+      <div className="ad-label">SPONSORED CONTENT</div>
+      <div className="ad-box glass" ref={adRef}>
+         <div className="custom-ad-placeholder">
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', fontWeight: 800 }}>Registry Stream Active</span>
+         </div>
       </div>
 
       <style jsx>{`
@@ -51,23 +55,24 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style, custo
           font-size: 0.65rem;
           color: var(--text-muted);
           font-weight: 800;
-          letter-spacing: 1.5px;
-          margin-bottom: 0.5rem;
+          letter-spacing: 2px;
+          margin-bottom: 0.75rem;
         }
         .ad-box {
-          background: var(--surface);
-          border: 1px dashed var(--surface-border);
-          min-height: 90px;
-          border-radius: 12px;
+          background: rgba(255,255,255,0.02);
+          border: 1px solid var(--surface-border);
+          min-height: 120px;
+          border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 10px;
+          padding: 20px;
           overflow: hidden;
+          transition: 0.3s;
         }
-        .custom-ad-placeholder {
-          text-transform: uppercase;
-          font-family: inherit;
+        .ad-box:hover {
+          border-color: rgba(255,255,255,0.15);
+          background: rgba(255,255,255,0.04);
         }
       `}</style>
     </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo } from 'react';
 import Link from "next/link";
-import { Movie, SiteSettings } from "@/lib/data";
+import { Movie, SiteSettings } from "@/lib/types";
 import { addMovie, editMovie, deleteMovie, updateSettings } from "@/lib/actions";
 
 interface DashboardClientProps {
@@ -133,8 +133,11 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
             <div className="content-management">
               <div className="panel-grid">
                 {/* Movie Editor */}
-                <section className="form-panel card-premium">
-                  <h2>{editingMovie ? 'Modify Entry' : 'New Entry'}</h2>
+                <section className="form-panel card-premium glass">
+                  <h2 style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ color: 'var(--accent)' }}>{editingMovie ? '✏️' : '➕'}</span>
+                    {editingMovie ? 'Edit Production' : 'Register New Title'}
+                  </h2>
                   <form 
                     ref={movieFormRef}
                     action={async (formData) => {
@@ -148,9 +151,22 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                     }}
                   >
                     <div className="form-group">
-                      <label>Production Title</label>
-                      <input name="title" defaultValue={editingMovie?.title} required />
+                      <label>YouTube Link / ID (Primary Source)</label>
+                      <input 
+                        name="youtube_link" 
+                        defaultValue={editingMovie?.trailer_id} 
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        required 
+                        style={{ background: 'var(--surface-raised)', border: '1px solid var(--accent)' }}
+                      />
+                      <p className="hint">Poster and Trailer ID will be auto-synced from this link.</p>
                     </div>
+
+                    <div className="form-group">
+                      <label>Production Title</label>
+                      <input name="title" defaultValue={editingMovie?.title} placeholder="e.g. Avatar: Fire and Ash" required />
+                    </div>
+
                     <div className="form-row">
                       <div className="form-group">
                         <label>Premiere Date</label>
@@ -161,37 +177,42 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                         <input name="vote_average" type="number" step="0.1" defaultValue={editingMovie?.vote_average || 8.0} />
                       </div>
                     </div>
-                    <div className="form-group">
-                      <label>High-Res Backdrop URL</label>
-                      <input name="backdrop_path" defaultValue={editingMovie?.backdrop_path} placeholder="/image.jpg" />
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Quality</label>
+                        <input name="quality" defaultValue={editingMovie?.quality || "HD"} placeholder="HD" />
+                      </div>
+                      <div className="form-group">
+                        <label>Runtime</label>
+                        <input name="duration" defaultValue={editingMovie?.duration || "120m"} placeholder="120m" />
+                      </div>
                     </div>
+
                     <div className="form-group">
-                      <label>YouTube ID / Link</label>
-                      <input name="youtube_link" defaultValue={editingMovie?.trailer_id} required />
+                      <label>Editorial Review Breakdown</label>
+                      <textarea name="review_content" rows={6} defaultValue={editingMovie?.review_content} placeholder="Write professional cinematic breakdown..."></textarea>
                     </div>
-                    <div className="form-group">
-                      <label>Review Synopsis</label>
-                      <textarea name="review_content" rows={4} defaultValue={editingMovie?.review_content}></textarea>
-                    </div>
-                    <div className="form-actions">
-                      <button type="submit" className="btn btn-primary">Commit To Database</button>
+
+                    <div className="form-actions" style={{ marginTop: '24px' }}>
+                      <button type="submit" className="btn btn-primary w-full">Commit Changes to Portal</button>
                       {editingMovie && (
-                        <button type="button" onClick={() => setEditingMovie(null)} className="btn btn-outline">Discard Changes</button>
+                        <button type="button" onClick={() => setEditingMovie(null)} className="btn btn-glass w-full" style={{ marginTop: '12px' }}>Cancel Edit</button>
                       )}
                     </div>
                   </form>
                 </section>
 
                 {/* Library List */}
-                <section className="list-panel card-premium">
-                  <h2>Library Overview</h2>
+                <section className="list-panel card-premium glass">
+                  <h2 style={{ marginBottom: '24px' }}>Archive Registry ({initialMovies.length})</h2>
                   <div className="list-scroll">
                     {initialMovies.map(movie => (
                       <div key={movie.id} className="list-item">
-                        <img src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`} alt="" />
+                        <img src={movie.poster_path} alt="" />
                         <div className="item-info">
                           <span className="title">{movie.title}</span>
-                          <span className="date">{movie.release_date}</span>
+                          <span className="date">{movie.release_date} • {movie.quality}</span>
                         </div>
                         <div className="item-controls">
                           <button onClick={() => setEditingMovie(movie)} className="icon-btn">✏️</button>
@@ -208,47 +229,60 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
           )}
 
           {activeTab === 'ads' && (
-            <section className="monetization-panel card-premium max-w-2">
-              <div className="panel-header">
-                <h2>Adsterra Revenue Control</h2>
-                <div className="status-pill active">Connected</div>
+            <section className="monetization-panel card-premium glass" style={{ maxWidth: '900px' }}>
+              <div className="panel-header" style={{ marginBottom: '32px' }}>
+                <h2>Adsterra Revenue Master Control</h2>
+                <div className="status-pill active">System Integrated</div>
               </div>
               
               <form action={updateSettings} className="settings-form">
-                <div className="form-group checkbox-group">
-                  <label>Enable Monetization Layer</label>
-                  <input type="checkbox" name="adsterra_enabled" defaultChecked={initialSettings.adsterra.enabled} />
+                <div className="form-group checkbox-group" style={{ background: 'rgba(229, 9, 20, 0.1)', padding: '20px', borderRadius: '12px', marginBottom: '24px' }}>
+                  <div style={{ flex: 1 }}>
+                     <label style={{ margin: 0, fontSize: '1.1rem' }}>Global Monetization Engine</label>
+                     <p className="hint" style={{ marginTop: '4px' }}>Toggle all ad injections sitewide via this master switch.</p>
+                  </div>
+                  <input type="checkbox" name="adsterra_enabled" defaultChecked={initialSettings.adsterra.enabled} style={{ width: '24px', height: '24px' }} />
                 </div>
                 
-                <div className="form-group">
-                  <label>Social Bar Script (Adsterra)</label>
-                  <textarea name="adsterra_social_bar" rows={3} defaultValue={initialSettings.adsterra.scripts.social_bar}></textarea>
-                  <p className="hint">Injects the Social Bar overlay sitewide.</p>
+                <div className="panel-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                  <div className="form-group">
+                    <label>Social Bar / Social Direct</label>
+                    <textarea name="adsterra_social_bar" rows={5} defaultValue={initialSettings.adsterra.scripts.social_bar} placeholder="Paste Adsterra Social Bar script here..."></textarea>
+                    <p className="hint">Injected before the closing &lt;/body&gt; tag.</p>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Popunder Script</label>
+                    <textarea name="adsterra_popunder" rows={5} defaultValue={initialSettings.adsterra.scripts.popunder} placeholder="Paste Popunder script here..."></textarea>
+                    <p className="hint">Injected in the &lt;head&gt; section.</p>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Native Banner (In-Feed)</label>
+                    <textarea name="adsterra_native_banner" rows={5} defaultValue={initialSettings.adsterra.scripts.native_banner} placeholder="Paste Native Banner code here..."></textarea>
+                    <p className="hint">Appears between movie rows on home.</p>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Verification Meta Tag</label>
+                    <textarea name="adsterra_verification" rows={5} defaultValue={initialSettings.adsterra.verification_tag} placeholder='<meta name="adsterra-verification"...'></textarea>
+                  </div>
                 </div>
 
-                <div className="form-group">
-                  <label>Popunder Script</label>
-                  <textarea name="adsterra_popunder" rows={3} defaultValue={initialSettings.adsterra.scripts.popunder}></textarea>
+                <div style={{ marginTop: '32px', padding: '20px', borderTop: '1px solid var(--surface-border)' }}>
+                   <button type="submit" className="btn btn-primary w-full">Deploy Monetization Update</button>
                 </div>
-
-                <div className="form-group">
-                  <label>Site Verification Meta Tag</label>
-                  <input name="adsterra_verification" defaultValue={initialSettings.adsterra.verification_tag} placeholder='<meta name="adsterra-verification" ...' />
-                </div>
-
-                <button type="submit" className="btn btn-primary">Sync Monetization Settings</button>
               </form>
             </section>
           )}
 
           {activeTab === 'settings' && (
-            <section className="settings-panel card-premium max-w-2">
-              <h2>Infrastructure Settings</h2>
+            <section className="settings-panel card-premium glass" style={{ maxWidth: '800px' }}>
+              <h2>Infrastructure Matrix</h2>
               <form action={updateSettings} className="settings-form">
                 <div className="form-group">
-                  <label>Ads.txt Content</label>
-                  <textarea name="ads_txt" rows={8} defaultValue={initialSettings.site.ads_txt} placeholder="google.com, pub-XXXXX, DIRECT..."></textarea>
-                  <p className="hint">Required for AdSense/Adsterra domain approval.</p>
+                  <label>Ads.txt Deployment</label>
+                  <textarea name="ads_txt" rows={10} defaultValue={initialSettings.site.ads_txt} placeholder="adsterra.com, XXXXX, DIRECT" style={{ fontFamily: 'monospace' }}></textarea>
                 </div>
                 <button type="submit" className="btn btn-primary">Update Infrastructure</button>
               </form>
