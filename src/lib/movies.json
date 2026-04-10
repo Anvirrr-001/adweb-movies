@@ -7,7 +7,11 @@
     "release_date": "2026-12-18",
     "vote_average": 8.8,
     "overview": "Jake Sully and Neytiri face off against the 'Ash People', a tribe of Na'vi who represent the darker side of Pandora.",
-    "genre_ids": [28, 12, 878],
+    "genre_ids": [
+      28,
+      12,
+      878
+    ],
     "trailer_id": "nb_fFj_0rq8",
     "quality": "UHD 4K",
     "duration": "162m",
@@ -21,7 +25,11 @@
     "release_date": "2026-05-01",
     "vote_average": 9.2,
     "overview": "The Avengers assemble once again to face a threat unlike any they have ever encountered: Victor Von Doom.",
-    "genre_ids": [28, 12, 878],
+    "genre_ids": [
+      28,
+      12,
+      878
+    ],
     "trailer_id": "399Ez7WHK5s",
     "quality": "UHD 4K",
     "duration": "154m",
@@ -35,7 +43,10 @@
     "release_date": "2026-10-02",
     "vote_average": 8.5,
     "overview": "Robert Pattinson returns as the Dark Knight in a Gotham City still reeling from the events of the first film.",
-    "genre_ids": [18, 80],
+    "genre_ids": [
+      18,
+      80
+    ],
     "trailer_id": "wY8XcmrIujE",
     "quality": "UHD 4K",
     "duration": "148m",
@@ -44,13 +55,17 @@
   {
     "id": 4,
     "title": "The Super Mario Bros. Movie 2",
-    "poster_path": "https://img.youtube.com/vi/RjNc7S-7N-k/maxresdefault.jpg",
-    "backdrop_path": "https://img.youtube.com/vi/RjNc7S-7N-k/maxresdefault.jpg",
+    "poster_path": "https://img.youtube.com/vi/OQEZHXYG8r4/maxresdefault.jpg",
+    "backdrop_path": "https://img.youtube.com/vi/OQEZHXYG8r4/maxresdefault.jpg",
     "release_date": "2026-04-03",
     "vote_average": 7.9,
-    "overview": "Mario and Luigi embark on a new adventure through the Mushroom Kingdom and beyond.",
-    "genre_ids": [16, 12, 35],
-    "trailer_id": "RjNc7S-7N-k",
+    "overview": null,
+    "genre_ids": [
+      16,
+      12,
+      35
+    ],
+    "trailer_id": "OQEZHXYG8r4",
     "quality": "UHD 4K",
     "duration": "105m",
     "review_content": "Illumination and Nintendo deliver another vibrant, fun-filled romp. With new power-ups and beloved characters making their debut, this sequel is a treat for fans of all ages."
@@ -58,15 +73,20 @@
   {
     "id": 5,
     "title": "Spider-Man: Beyond the Spider-Verse",
-    "poster_path": "https://img.youtube.com/vi/n0p9fS0vB3w/maxresdefault.jpg",
-    "backdrop_path": "https://img.youtube.com/vi/n0p9fS0vB3w/maxresdefault.jpg",
+    "poster_path": "https://img.youtube.com/vi/Wy1pIFF5imc/maxresdefault.jpg",
+    "backdrop_path": "https://img.youtube.com/vi/Wy1pIFF5imc/maxresdefault.jpg",
     "release_date": "2026-03-27",
-    "vote_average": 9.0,
-    "overview": "The conclusion to Miles Morales' epic journey across the Spider-Verse.",
-    "genre_ids": [16, 28, 12, 878],
-    "trailer_id": "n0p9fS0vB3w",
-    "quality": "UHD 4K",
-    "duration": "140m",
+    "vote_average": 8,
+    "overview": null,
+    "genre_ids": [
+      16,
+      28,
+      12,
+      878
+    ],
+    "trailer_id": "Wy1pIFF5imc",
+    "quality": "HD",
+    "duration": "120m",
     "review_content": "The trilogy concludes with a visually stunning and emotionally resonant masterpiece. The animation styles blend seamlessly as Miles faces his toughest challenge yet."
   },
   {
@@ -77,7 +97,11 @@
     "release_date": "2025-07-02",
     "vote_average": 7.5,
     "overview": "A new era of dinosaurs begins as humanity struggles to coexist with the prehistoric giants.",
-    "genre_ids": [28, 12, 878],
+    "genre_ids": [
+      28,
+      12,
+      878
+    ],
     "trailer_id": "7jI_6c8xRzo",
     "quality": "UHD 4K",
     "duration": "125m",
@@ -91,7 +115,11 @@
     "release_date": "2026-05-22",
     "vote_average": 8.4,
     "overview": "Din Djarin and Grogu take their adventures to the big screen.",
-    "genre_ids": [28, 12, 878],
+    "genre_ids": [
+      28,
+      12,
+      878
+    ],
     "trailer_id": "t8f_Wp2S1_o",
     "quality": "UHD 4K",
     "duration": "118m",
@@ -105,7 +133,12 @@
     "release_date": "2026-06-19",
     "vote_average": 7.8,
     "overview": "Woody, Buzz, and the gang reunite for a new chapter in their lives.",
-    "genre_ids": [16, 12, 35, 10751],
+    "genre_ids": [
+      16,
+      12,
+      35,
+      10751
+    ],
     "trailer_id": "X_zQo-QhA0Y",
     "quality": "UHD 4K",
     "duration": "100m",
@@ -119,7 +152,11 @@
     "release_date": "2026-06-26",
     "vote_average": 8.1,
     "overview": "Kara Zor-El travels the galaxy to find her own identity and become a hero.",
-    "genre_ids": [28, 12, 878],
+    "genre_ids": [
+      28,
+      12,
+      878
+    ],
     "trailer_id": "EGo6rXjA_zY",
     "quality": "UHD 4K",
     "duration": "130m",
@@ -133,7 +170,11 @@
     "release_date": "2026-06-05",
     "vote_average": 7.6,
     "overview": "He-Man must defend Eternia from the evil forces of Skeletor.",
-    "genre_ids": [28, 12, 14],
+    "genre_ids": [
+      28,
+      12,
+      14
+    ],
     "trailer_id": "5qV8XvR9y_o",
     "quality": "UHD 4K",
     "duration": "122m",
@@ -145,9 +186,14 @@
     "poster_path": "https://img.youtube.com/vi/hXz3m6Z2Z_o/maxresdefault.jpg",
     "backdrop_path": "https://img.youtube.com/vi/hXz3m6Z2Z_o/maxresdefault.jpg",
     "release_date": "2024-11-27",
-    "vote_average": 8.0,
+    "vote_average": 8,
     "overview": "Moana sets sail on a new voyage to the far seas of Oceania.",
-    "genre_ids": [16, 12, 35, 10751],
+    "genre_ids": [
+      16,
+      12,
+      35,
+      10751
+    ],
     "trailer_id": "hXz3m6Z2Z_o",
     "quality": "UHD 4K",
     "duration": "108m",
@@ -161,7 +207,12 @@
     "release_date": "2024-12-20",
     "vote_average": 7.4,
     "overview": "The origin story of the legendary Pride Rock king.",
-    "genre_ids": [28, 12, 18, 10751],
+    "genre_ids": [
+      28,
+      12,
+      18,
+      10751
+    ],
     "trailer_id": "o17MF9WkSRE",
     "quality": "UHD 4K",
     "duration": "115m",
@@ -175,7 +226,12 @@
     "release_date": "2024-12-20",
     "vote_average": 8.2,
     "overview": "Sonic, Tails, and Knuckles face off against a new threat: Shadow.",
-    "genre_ids": [28, 12, 35, 10751],
+    "genre_ids": [
+      28,
+      12,
+      35,
+      10751
+    ],
     "trailer_id": "qSu6i2iFKN0",
     "quality": "UHD 4K",
     "duration": "110m",
@@ -189,7 +245,11 @@
     "release_date": "2024-11-22",
     "vote_average": 7.7,
     "overview": "Years after the death of Maximus, Lucius enters the Colosseum.",
-    "genre_ids": [28, 12, 18],
+    "genre_ids": [
+      28,
+      12,
+      18
+    ],
     "trailer_id": "4L6p-8Qv68k",
     "quality": "UHD 4K",
     "duration": "148m",
@@ -203,7 +263,11 @@
     "release_date": "2024-11-22",
     "vote_average": 8.5,
     "overview": "The untold story of the witches of Oz.",
-    "genre_ids": [14, 10402, 10749],
+    "genre_ids": [
+      14,
+      10402,
+      10749
+    ],
     "trailer_id": "6COmYeLsz4c",
     "quality": "UHD 4K",
     "duration": "160m",
@@ -215,9 +279,13 @@
     "poster_path": "https://img.youtube.com/vi/L6P3nI6V_Is/maxresdefault.jpg",
     "backdrop_path": "https://img.youtube.com/vi/L6P3nI6V_Is/maxresdefault.jpg",
     "release_date": "2024-11-08",
-    "vote_average": 8.0,
+    "vote_average": 8,
     "overview": "Paddington travels to Peru to visit his Aunt Lucy.",
-    "genre_ids": [12, 35, 10751],
+    "genre_ids": [
+      12,
+      35,
+      10751
+    ],
     "trailer_id": "L6P3nI6V_Is",
     "quality": "UHD 4K",
     "duration": "103m",
@@ -231,7 +299,12 @@
     "release_date": "2024-11-15",
     "vote_average": 6.8,
     "overview": "A polar bounty hunter must rescue Santa Claus.",
-    "genre_ids": [28, 12, 35, 14],
+    "genre_ids": [
+      28,
+      12,
+      35,
+      14
+    ],
     "trailer_id": "wL7vMId5Y5I",
     "quality": "UHD 4K",
     "duration": "123m",
@@ -245,7 +318,11 @@
     "release_date": "2024-11-08",
     "vote_average": 7.1,
     "overview": "A single father and two women venture from safety to face monstrous creatures to save a young boy's life.",
-    "genre_ids": [28, 878, 53],
+    "genre_ids": [
+      28,
+      878,
+      53
+    ],
     "trailer_id": "XgJcRmsT1C0",
     "quality": "UHD 4K",
     "duration": "100m",
@@ -259,7 +336,10 @@
     "release_date": "2024-12-25",
     "vote_average": 8.7,
     "overview": "A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her.",
-    "genre_ids": [14, 27],
+    "genre_ids": [
+      14,
+      27
+    ],
     "trailer_id": "nur0rOPr6QA",
     "quality": "UHD 4K",
     "duration": "135m",
@@ -273,7 +353,10 @@
     "release_date": "2024-12-25",
     "vote_average": 7.5,
     "overview": "The life of Robbie Williams, as told from his perspective.",
-    "genre_ids": [18, 10402],
+    "genre_ids": [
+      18,
+      10402
+    ],
     "trailer_id": "K0tA8W5m-hY",
     "quality": "UHD 4K",
     "duration": "135m",
@@ -287,7 +370,10 @@
     "release_date": "2024-12-25",
     "vote_average": 8.3,
     "overview": "At the Newport Folk Festival in 1965, Bob Dylan shakes up the music world.",
-    "genre_ids": [18, 10402],
+    "genre_ids": [
+      18,
+      10402
+    ],
     "trailer_id": "fBcl7Niz058",
     "quality": "UHD 4K",
     "duration": "140m",
@@ -301,7 +387,9 @@
     "release_date": "2024-12-20",
     "vote_average": 8.9,
     "overview": "A Hungarian-born Jewish architect who survives the Holocaust and migrates to the US.",
-    "genre_ids": [18],
+    "genre_ids": [
+      18
+    ],
     "trailer_id": "J_D8zYQoR_Y",
     "quality": "70mm Film",
     "duration": "215m",
@@ -315,7 +403,11 @@
     "release_date": "2024-11-22",
     "vote_average": 8.1,
     "overview": "A cat wakes up in a world covered in water.",
-    "genre_ids": [16, 12, 14],
+    "genre_ids": [
+      16,
+      12,
+      14
+    ],
     "trailer_id": "s0A_vO8YV4o",
     "quality": "UHD 4K",
     "duration": "84m",
@@ -329,7 +421,11 @@
     "release_date": "2024-11-27",
     "vote_average": 7.9,
     "overview": "A sports broadcasting team during the 1972 Munich Olympics.",
-    "genre_ids": [18, 53, 36],
+    "genre_ids": [
+      18,
+      53,
+      36
+    ],
     "trailer_id": "p8uX51p92-s",
     "quality": "UHD 4K",
     "duration": "91m",
@@ -343,7 +439,10 @@
     "release_date": "2024-10-18",
     "vote_average": 7.2,
     "overview": "A pop star begins experiencing terrifying events.",
-    "genre_ids": [27, 53],
+    "genre_ids": [
+      27,
+      53
+    ],
     "trailer_id": "_it_n8X0C5A",
     "quality": "UHD 4K",
     "duration": "127m",
@@ -355,9 +454,11 @@
     "poster_path": "https://img.youtube.com/vi/L06_NfU0X-E/maxresdefault.jpg",
     "backdrop_path": "https://img.youtube.com/vi/L06_NfU0X-E/maxresdefault.jpg",
     "release_date": "2024-10-11",
-    "vote_average": 7.0,
+    "vote_average": 7,
     "overview": "Art the Clown unleashes chaos at Christmas.",
-    "genre_ids": [27],
+    "genre_ids": [
+      27
+    ],
     "trailer_id": "L06_NfU0X-E",
     "quality": "UHD 4K",
     "duration": "125m",
@@ -371,7 +472,10 @@
     "release_date": "2024-11-08",
     "vote_average": 7.8,
     "overview": "Two young missionaries are forced to prove their faith when they knock on the wrong door.",
-    "genre_ids": [27, 53],
+    "genre_ids": [
+      27,
+      53
+    ],
     "trailer_id": "0Z_fN5J5kC8",
     "quality": "UHD 4K",
     "duration": "111m",
@@ -385,7 +489,11 @@
     "release_date": "2024-12-13",
     "vote_average": 6.7,
     "overview": "The origin story of Marvel's most iconic hunter.",
-    "genre_ids": [28, 12, 53],
+    "genre_ids": [
+      28,
+      12,
+      53
+    ],
     "trailer_id": "Ywz6-A_mR3Q",
     "quality": "UHD 4K",
     "duration": "124m",
@@ -397,9 +505,12 @@
     "poster_path": "https://img.youtube.com/vi/7jI_6c8xRzo/maxresdefault.jpg",
     "backdrop_path": "https://img.youtube.com/vi/7jI_6c8xRzo/maxresdefault.jpg",
     "release_date": "2025-06-06",
-    "vote_average": 8.0,
+    "vote_average": 8,
     "overview": "A young woman seeks revenge against the people who killed her family.",
-    "genre_ids": [28, 53],
+    "genre_ids": [
+      28,
+      53
+    ],
     "trailer_id": "7jI_6c8xRzo",
     "quality": "UHD 4K",
     "duration": "120m",
@@ -413,10 +524,31 @@
     "release_date": "2025-04-04",
     "vote_average": 7.2,
     "overview": "The malevolent Ender Dragon sets out on a path of destruction.",
-    "genre_ids": [10751, 12, 35, 14],
+    "genre_ids": [
+      10751,
+      12,
+      35,
+      14
+    ],
     "trailer_id": "mI60aZ_oU8s",
     "quality": "UHD 4K",
     "duration": "112m",
     "review_content": "A visually unique adaptation that captures the imagination of the game. Jack Black and Jason Momoa bring a lot of energy to this blocky world."
+  },
+  {
+    "id": 31,
+    "title": "Spider-Man: Beyond the Spider-Verse",
+    "poster_path": "https://img.youtube.com/vi/Wy1pIFF5imc/maxresdefault.jpg",
+    "backdrop_path": "https://img.youtube.com/vi/Wy1pIFF5imc/maxresdefault.jpg",
+    "release_date": "2000-12-23",
+    "vote_average": 8,
+    "overview": "No overview available.",
+    "genre_ids": [
+      28
+    ],
+    "trailer_id": "Wy1pIFF5imc",
+    "review_content": "Editorial breakdown pending.",
+    "quality": "HD",
+    "duration": "120m"
   }
 ]

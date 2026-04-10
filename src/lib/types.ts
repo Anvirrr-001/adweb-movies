@@ -16,10 +16,15 @@ export interface Movie {
 export interface SiteSettings {
   adsterra: {
     enabled: boolean;
+    direct_link: string;
     scripts: {
       social_bar: string;
       popunder: string;
       native_banner: string;
+      home_mid: string;
+      archive_bottom: string;
+      movie_sidebar_top: string;
+      movie_sidebar_bottom: string;
     },
     verification_tag: string;
   };

@@ -1,4 +1,4 @@
-import { getMovies } from "@/lib/data.server";
+import { getMovies, getSettings } from "@/lib/data.server";
 import MoviesList from "@/components/MoviesList";
 
 export const metadata = {
@@ -6,8 +6,22 @@ export const metadata = {
   description: "Browse our extensive database of the latest movie trailers and reviews.",
 };
 
-export default function MoviesPage() {
-  const allMovies = getMovies();
+interface MoviesPageProps {
+  searchParams: Promise<{ q?: string; genre?: string }>;
+}
 
-  return <MoviesList initialMovies={allMovies} />;
+export default async function MoviesPage({ searchParams }: MoviesPageProps) {
+  const { q, genre } = await searchParams;
+  const allMovies = getMovies();
+  const { adsterra } = getSettings();
+  const downloadLink = adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/";
+
+  return (
+    <MoviesList
+      initialMovies={allMovies}
+      downloadLink={downloadLink}
+      initialQuery={q || ""}
+      initialGenre={genre ? parseInt(genre) : null}
+    />
+  );
 }

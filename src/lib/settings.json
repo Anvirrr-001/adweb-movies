@@ -1,12 +1,17 @@
 {
   "adsterra": {
-    "enabled": true,
+    "enabled": false,
+    "direct_link": "",
     "scripts": {
-      "social_bar": "",
-      "popunder": "",
-      "native_banner": ""
+      "social_bar": null,
+      "popunder": null,
+      "native_banner": null,
+      "home_mid": null,
+      "archive_bottom": null,
+      "movie_sidebar_top": null,
+      "movie_sidebar_bottom": null
     },
-    "verification_tag": ""
+    "verification_tag": null
   },
   "site": {
     "title": "MOVIES2026",

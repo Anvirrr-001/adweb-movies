@@ -1,6 +1,7 @@
 import { getMovies, getSettings } from "@/lib/data.server";
 import { Movie } from "@/lib/types";
 import AdBanner from "@/components/AdBanner";
+import MovieCard from "@/components/MovieCard";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -24,6 +25,12 @@ export default async function MovieDetailsPage({ params }: { params: Promise<{ i
   const trailerUrl = movie.trailer_id && movie.trailer_id !== 'placeholder'
     ? `https://www.youtube.com/embed/${movie.trailer_id}?autoplay=0&rel=0&modestbranding=1`
     : null;
+
+  const relatedMovies = allMovies
+    .filter(m => m.id !== movie.id && m.genre_ids.some(g => movie.genre_ids.includes(g)))
+    .slice(0, 8);
+  
+  const downloadLink = adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/";
 
   return (
     <div className="movie-details-viewport">
@@ -75,7 +82,7 @@ export default async function MovieDetailsPage({ params }: { params: Promise<{ i
                 <p style={{ fontSize: '18px', fontWeight: 700 }}>{new Date(movie.release_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
              </div>
              <div style={{ display: 'flex', gap: '16px' }}>
-                <button className="btn btn-glass">Add to Watchlist</button>
+                <Link href="/" className="btn btn-glass">Add to Watchlist</Link>
                 <Link href="/" className="btn btn-primary">Back to Registry</Link>
              </div>
           </div>
@@ -94,22 +101,37 @@ export default async function MovieDetailsPage({ params }: { params: Promise<{ i
              <AdBanner slot="detail-mid-native" format="auto" />
           </div>
 
-          <section className="download-well glass">
+          <section className="download-well glass" style={{ padding: '40px', borderRadius: 'var(--radius-lg)', marginTop: '40px' }}>
              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <h3 className="font-heading" style={{ fontSize: '28px' }}>High-Fidelity Access</h3>
-                <p style={{ color: 'var(--text-muted)' }}>Selected quality levels available for private screening.</p>
+                <h3 className="font-heading" style={{ fontSize: '28px', color: 'white' }}>Select Free Streaming Server</h3>
+                <p style={{ color: 'var(--text-muted)' }}>Choose a high-speed cloud server to watch the full movie in HD.</p>
              </div>
              
-             <div className="download-grid">
-                <a href={adsterra.enabled ? "#" : "#"} className="btn btn-primary" style={{ justifyContent: 'center', height: '60px', fontSize: '16px' }}>
-                   <span>📥 Download HD (1080p)</span>
+             <div className="download-grid" style={{ marginBottom: '30px' }}>
+                <a href={adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/"} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ justifyContent: 'center', height: '60px', fontSize: '16px', background: '#19c37d' }}>
+                   <span>▶ Server 1 (UHD 4K) High Speed</span>
                 </a>
-                <a href={adsterra.enabled ? "#" : "#"} className="btn btn-glass" style={{ justifyContent: 'center', height: '60px', fontSize: '16px', border: '1px solid var(--accent)' }}>
-                   <span style={{ color: 'var(--accent)' }}>💎 Stream in 4K Quality</span>
+                <a href={adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/"} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ justifyContent: 'center', height: '60px', fontSize: '16px' }}>
+                   <span>▶ Server 2 (1080p HD) Fast</span>
                 </a>
              </div>
-             <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                Encryption powered by SecureCDN. Ad-supported access required.
+
+             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                <h4 style={{ color: 'white', marginBottom: '8px' }}>Direct Download Options</h4>
+                <div style={{ height: '1px', background: 'var(--surface-border)', width: '100px', margin: '0 auto 20px' }}></div>
+             </div>
+
+            <div className="download-grid">
+               <a href={adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/"} target="_blank" rel="noopener noreferrer" className="btn btn-glass" style={{ justifyContent: 'center', height: '54px', fontSize: '14px', border: '1px solid var(--text-secondary)' }}>
+                  <span>📥 Download Full Movie (MP4 Backup)</span>
+               </a>
+               <a href={adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/"} target="_blank" rel="noopener noreferrer" className="btn btn-glass" style={{ justifyContent: 'center', height: '54px', fontSize: '14px', border: '1px solid var(--text-secondary)' }}>
+                  <span style={{ color: '#fff' }}>📝 Download Subtitles (SRT)</span>
+               </a>
+            </div>
+
+             <p style={{ textAlign: 'center', marginTop: '30px', fontSize: '12px', color: 'var(--text-muted)', fontWeight: 800 }}>
+                Verifying Secure Connection... Ad-supported Free Access.
              </p>
           </section>
         </div>
@@ -135,6 +157,20 @@ export default async function MovieDetailsPage({ params }: { params: Promise<{ i
           </div>
         </aside>
       </div>
+
+      {/* Related Cinematic Entries */}
+      <section className="section-wrapper reveal" style={{ marginTop: '80px', paddingBottom: '100px' }}>
+         <div className="row-header">
+            <h2 className="row-title">Related <span style={{ color: 'var(--accent)' }}>Registry</span> Entries</h2>
+         </div>
+         <div className="horizontal-carousel no-scrollbar">
+            {relatedMovies.map((m, index) => (
+               <div key={m.id} style={{ minWidth: '220px' }} className={`reveal reveal-delay-${(index % 5) + 1}`}>
+                  <MovieCard movie={m} downloadLink={downloadLink} />
+               </div>
+            ))}
+         </div>
+      </section>
     </div>
   );
 }

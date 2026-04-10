@@ -229,51 +229,115 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
           )}
 
           {activeTab === 'ads' && (
-            <section className="monetization-panel card-premium glass" style={{ maxWidth: '900px' }}>
-              <div className="panel-header" style={{ marginBottom: '32px' }}>
-                <h2>Adsterra Revenue Master Control</h2>
-                <div className="status-pill active">System Integrated</div>
-              </div>
-              
+            <div className="monetization-management animate-fade-in">
+              <header className="panel-header" style={{ marginBottom: '32px' }}>
+                <div style={{ flex: 1 }}>
+                  <h2 style={{ fontSize: '28px' }}>Monetization Control Center</h2>
+                  <p className="text-secondary">Configure Adsterra placements and direct links sitewide.</p>
+                </div>
+                <div className={`status-pill ${initialSettings.adsterra.enabled ? 'active' : ''}`}>
+                  {initialSettings.adsterra.enabled ? 'Live Deployment' : 'System Paused'}
+                </div>
+              </header>
+
               <form action={updateSettings} className="settings-form">
-                <div className="form-group checkbox-group" style={{ background: 'rgba(229, 9, 20, 0.1)', padding: '20px', borderRadius: '12px', marginBottom: '24px' }}>
-                  <div style={{ flex: 1 }}>
-                     <label style={{ margin: 0, fontSize: '1.1rem' }}>Global Monetization Engine</label>
-                     <p className="hint" style={{ marginTop: '4px' }}>Toggle all ad injections sitewide via this master switch.</p>
-                  </div>
-                  <input type="checkbox" name="adsterra_enabled" defaultChecked={initialSettings.adsterra.enabled} style={{ width: '24px', height: '24px' }} />
-                </div>
-                
-                <div className="panel-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                  <div className="form-group">
-                    <label>Social Bar / Social Direct</label>
-                    <textarea name="adsterra_social_bar" rows={5} defaultValue={initialSettings.adsterra.scripts.social_bar} placeholder="Paste Adsterra Social Bar script here..."></textarea>
-                    <p className="hint">Injected before the closing &lt;/body&gt; tag.</p>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Popunder Script</label>
-                    <textarea name="adsterra_popunder" rows={5} defaultValue={initialSettings.adsterra.scripts.popunder} placeholder="Paste Popunder script here..."></textarea>
-                    <p className="hint">Injected in the &lt;head&gt; section.</p>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Native Banner (In-Feed)</label>
-                    <textarea name="adsterra_native_banner" rows={5} defaultValue={initialSettings.adsterra.scripts.native_banner} placeholder="Paste Native Banner code here..."></textarea>
-                    <p className="hint">Appears between movie rows on home.</p>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Verification Meta Tag</label>
-                    <textarea name="adsterra_verification" rows={5} defaultValue={initialSettings.adsterra.verification_tag} placeholder='<meta name="adsterra-verification"...'></textarea>
+                {/* 1. Global Master Control */}
+                <div className="card-premium glass" style={{ marginBottom: '32px', border: '1px solid var(--accent)' }}>
+                  <div className="form-group checkbox-group" style={{ margin: 0, padding: '24px' }}>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#fff' }}>Global Monetization Engine</h3>
+                      <p className="hint" style={{ marginTop: '4px' }}>Master switch to enable or disable all third-party script injections across the platform.</p>
+                    </div>
+                    <div className="switch-wrapper">
+                      <input type="checkbox" name="adsterra_enabled" defaultChecked={initialSettings.adsterra.enabled} className="custom-switch" />
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ marginTop: '32px', padding: '20px', borderTop: '1px solid var(--surface-border)' }}>
-                   <button type="submit" className="btn btn-primary w-full">Deploy Monetization Update</button>
+                <div className="panel-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+                  {/* Left Column: Direct Links & Global Scripts */}
+                  <div className="column">
+                    <section className="card-premium glass" style={{ marginBottom: '32px' }}>
+                      <div style={{ padding: '24px' }}>
+                        <h3 style={{ marginBottom: '16px', color: 'var(--accent)' }}>🚀 Direct Link (Download Master)</h3>
+                        <p className="hint" style={{ marginBottom: '20px' }}>Paste your High-Converting Direct Link here. It will be applied to all "Download" buttons on movie pages.</p>
+                        <div className="form-group">
+                          <label>Adsterra Direct Link URL</label>
+                          <input 
+                            name="adsterra_direct_link" 
+                            defaultValue={initialSettings.adsterra.direct_link} 
+                            placeholder="https://example.com/direct-link"
+                            className="input-premium"
+                          />
+                        </div>
+                      </div>
+                    </section>
+
+                    <section className="card-premium glass">
+                      <div style={{ padding: '24px' }}>
+                        <h3 style={{ marginBottom: '16px' }}>🛠️ Global Scripts</h3>
+                        <div className="form-group">
+                          <label>Popunder Script</label>
+                          <textarea name="adsterra_popunder" rows={4} defaultValue={initialSettings.adsterra.scripts.popunder} placeholder="Paste Popunder code here..."></textarea>
+                          <p className="hint">Loads in the background when users click anywhere.</p>
+                        </div>
+                        <div className="form-group" style={{ marginTop: '20px' }}>
+                          <label>Social Bar Script</label>
+                          <textarea name="adsterra_social_bar" rows={4} defaultValue={initialSettings.adsterra.scripts.social_bar} placeholder="Paste Social Bar code here..."></textarea>
+                          <p className="hint">Floating sticky bar at the bottom or corners.</p>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+
+                  {/* Right Column: Placements & Banners */}
+                  <div className="column">
+                    <section className="card-premium glass" style={{ marginBottom: '32px' }}>
+                      <div style={{ padding: '24px' }}>
+                        <h3 style={{ marginBottom: '16px' }}>💠 Placement Slots (Native / Banners)</h3>
+                        <p className="hint" style={{ marginBottom: '20px' }}>Configure where specifically your banner and native ads appear.</p>
+                        
+                        <div className="form-group">
+                          <label>Homepage (Mid-Grid)</label>
+                          <textarea name="adsterra_home_mid" rows={3} defaultValue={initialSettings.adsterra.scripts.home_mid} placeholder="Paste Native/Banner code..."></textarea>
+                        </div>
+
+                        <div className="form-group" style={{ marginTop: '16px' }}>
+                          <label>Movie Details (Sidebar Top)</label>
+                          <textarea name="adsterra_movie_sidebar_top" rows={3} defaultValue={initialSettings.adsterra.scripts.movie_sidebar_top} placeholder="Paste Banner code..."></textarea>
+                        </div>
+
+                        <div className="form-group" style={{ marginTop: '16px' }}>
+                          <label>Movie Details (Sidebar Bottom)</label>
+                          <textarea name="adsterra_movie_sidebar_bottom" rows={3} defaultValue={initialSettings.adsterra.scripts.movie_sidebar_bottom} placeholder="Paste Banner code..."></textarea>
+                        </div>
+
+                        <div className="form-group" style={{ marginTop: '16px' }}>
+                          <label>Archive Page (Bottom Grid)</label>
+                          <textarea name="adsterra_archive_bottom" rows={3} defaultValue={initialSettings.adsterra.scripts.archive_bottom} placeholder="Paste Native code..."></textarea>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section className="card-premium glass">
+                      <div style={{ padding: '24px' }}>
+                        <h3 style={{ marginBottom: '16px' }}>🛡️ Infrastructure</h3>
+                        <div className="form-group">
+                          <label>Domain Verification Tag</label>
+                          <textarea name="adsterra_verification" rows={3} defaultValue={initialSettings.adsterra.verification_tag} placeholder='<meta name="adsterra-verification"...'></textarea>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+
+                <div className="form-actions sticky-footer" style={{ marginTop: '40px' }}>
+                   <button type="submit" className="btn btn-primary w-full" style={{ height: '56px', fontSize: '1.1rem' }}>
+                     Update Monetization Strategy
+                   </button>
                 </div>
               </form>
-            </section>
+            </div>
           )}
 
           {activeTab === 'settings' && (

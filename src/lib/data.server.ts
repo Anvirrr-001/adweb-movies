@@ -22,7 +22,20 @@ export function getSettings(): SiteSettings {
   } catch (error) {
     console.error("Error reading settings.json:", error);
     return {
-      adsterra: { enabled: false, scripts: { social_bar: "", popunder: "", native_banner: "" }, verification_tag: "" },
+      adsterra: { 
+        enabled: false, 
+        direct_link: "",
+        scripts: { 
+          social_bar: "", 
+          popunder: "", 
+          native_banner: "",
+          home_mid: "",
+          archive_bottom: "",
+          movie_sidebar_top: "",
+          movie_sidebar_bottom: ""
+        }, 
+        verification_tag: "" 
+      },
       site: { title: "MOVIES2026", description: "", ads_txt: "" }
     };
   }

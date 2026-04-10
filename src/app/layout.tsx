@@ -3,6 +3,8 @@ import "./globals.css";
 import Link from "next/link";
 import { getSettings } from "@/lib/data.server";
 import { SiteSettingsProvider } from "@/components/SiteSettingsProvider";
+import RevealScripts from "@/components/RevealScripts";
+import SearchBar from "@/components/SearchBar";
 
 const outfit = Outfit({ 
   subsets: ["latin"], 
@@ -30,17 +32,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Adsterra Verification */}
+        {/* Adsterra Verification - Extracted carefully to avoid Hydration bugs */}
         {adsterra.enabled && adsterra.verification_tag && (
-          <div dangerouslySetInnerHTML={{ __html: adsterra.verification_tag }} />
-        )}
-        
-        {/* Adsterra Popunder */}
-        {adsterra.enabled && adsterra.scripts.popunder && (
-          <div dangerouslySetInnerHTML={{ __html: adsterra.scripts.popunder }} />
+          <meta name="adsterra-verification" content={adsterra.verification_tag.match(/content="([^"]+)"/)?.[1] || ""} />
         )}
       </head>
       <body className={`${outfit.variable} ${inter.variable}`}>
+        {/* Scripts moved to body to prevent Head hydration mismatches */}
+        {adsterra.enabled && adsterra.scripts.popunder && (
+          <div dangerouslySetInnerHTML={{ __html: adsterra.scripts.popunder }} />
+        )}
+        <RevealScripts />
         <header className="site-header">
           <div className="header-container">
             <Link href="/" className="brand-area">
@@ -50,16 +52,16 @@ export default function RootLayout({
               <span className="brand-name">Watch<span>Trailers</span></span>
             </Link>
 
-            <div className="search-unit">
-              <span className="search-icon">🔍</span>
-              <input type="text" placeholder="Search movies, trailers..." className="search-input" />
-            </div>
+            <SearchBar />
 
-            <div className="user-actions">
-              <Link href="/dashboard" className="login-link">
-                <span>Admin Login</span>
-              </Link>
-            </div>
+            <nav className="header-nav">
+              <Link href="/" className="nav-link">Home</Link>
+              <Link href="/movies" className="nav-link">All Films</Link>
+              <Link href="/movies?genre=28" className="nav-link">Action</Link>
+              <Link href="/movies?genre=878" className="nav-link">Sci-Fi</Link>
+              <Link href="/movies?genre=27" className="nav-link">Horror</Link>
+              <Link href="/about" className="nav-link">About</Link>
+            </nav>
           </div>
         </header>
 

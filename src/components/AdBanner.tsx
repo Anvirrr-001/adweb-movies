@@ -16,10 +16,16 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
 
   useEffect(() => {
     if (isEnabled && adRef.current) {
-      const nativeScript = settings.adsterra.scripts.native_banner;
+      // Find the specific script for this slot from settings
+      let nativeScript = "";
       
-      // We only inject native banner script if it exists and we're in specific slots
-      if (nativeScript && (slot === 'home-mid' || slot === 'archive-bottom' || slot.includes('detail'))) {
+      if (slot === 'home-mid') nativeScript = settings.adsterra.scripts.home_mid;
+      else if (slot === 'archive-bottom') nativeScript = settings.adsterra.scripts.archive_bottom;
+      else if (slot === 'detail-sidebar-top') nativeScript = settings.adsterra.scripts.movie_sidebar_top;
+      else if (slot === 'detail-sidebar-bottom') nativeScript = settings.adsterra.scripts.movie_sidebar_bottom;
+      else if (slot.includes('native')) nativeScript = settings.adsterra.scripts.native_banner;
+
+      if (nativeScript) {
         const scriptContainer = document.createElement('div');
         scriptContainer.innerHTML = nativeScript;
         
@@ -36,7 +42,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
         adRef.current.appendChild(scriptContainer);
       }
     }
-  }, [slot, isEnabled, settings.adsterra.scripts.native_banner]);
+  }, [slot, isEnabled, settings.adsterra.scripts]);
 
   if (!isEnabled) return null;
 
