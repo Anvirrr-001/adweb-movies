@@ -26,20 +26,18 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
       }
 
       if (nativeScript) {
-        const scriptContainer = document.createElement('div');
-        scriptContainer.innerHTML = nativeScript;
+        adRef.current.innerHTML = nativeScript;
         
-        // Find and execute scripts if any
-        const scripts = scriptContainer.querySelectorAll('script');
+        // Find and execute scripts
+        const scripts = adRef.current.querySelectorAll('script');
         scripts.forEach(oldScript => {
           const newScript = document.createElement('script');
           Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          if (oldScript.innerHTML) {
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          }
           oldScript.parentNode?.replaceChild(newScript, oldScript);
         });
-
-        adRef.current.innerHTML = '';
-        adRef.current.appendChild(scriptContainer);
       }
     }
   }, [slot, isEnabled, settings.adsterra.scripts]);

@@ -5,6 +5,7 @@ import { getSettings } from "@/lib/data.server";
 import { SiteSettingsProvider } from "@/components/SiteSettingsProvider";
 import RevealScripts from "@/components/RevealScripts";
 import SearchBar from "@/components/SearchBar";
+import AdsterraController from "@/components/AdsterraController";
 
 const outfit = Outfit({ 
   subsets: ["latin"], 
@@ -38,10 +39,7 @@ export default function RootLayout({
         )}
       </head>
       <body className={`${outfit.variable} ${inter.variable}`}>
-        {/* Scripts moved to body to prevent Head hydration mismatches */}
-        {adsterra.enabled && adsterra.scripts.popunder && (
-          <div dangerouslySetInnerHTML={{ __html: adsterra.scripts.popunder }} />
-        )}
+        {/* Global Ads execution handled dynamically within AdsterraController below */}
         <RevealScripts />
         <header className="site-header">
           <div className="header-container">
@@ -94,10 +92,7 @@ export default function RootLayout({
           </div>
         </footer>
 
-        {/* Adsterra Social Bar */}
-        {adsterra.enabled && adsterra.scripts.social_bar && (
-          <div dangerouslySetInnerHTML={{ __html: adsterra.scripts.social_bar }} />
-        )}
+        <AdsterraController />
       </body>
     </html>
   );
