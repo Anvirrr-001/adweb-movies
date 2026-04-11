@@ -16,28 +16,62 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
 
   useEffect(() => {
     if (isEnabled && adRef.current) {
-      // Find the specific script for this slot from settings
-      let nativeScript = "";
-      
-      if (slot === 'home-mid' || slot === 'archive-bottom' || slot.includes('native')) {
-        nativeScript = settings.adsterra.scripts.native_banner || "";
-      } else if (slot === 'detail-sidebar-top' || slot === 'detail-sidebar-bottom' || slot.includes('sidebar')) {
-        nativeScript = settings.adsterra.scripts.banner_300x250 || "";
+      let adCode = "";
+      const isNative = slot === 'home-mid' || slot === 'archive-bottom' || slot.includes('native');
+      const isStatic = slot === 'detail-sidebar-top' || slot === 'detail-sidebar-bottom' || slot.includes('sidebar');
+
+      if (isNative) {
+        adCode = settings.adsterra.scripts.native_banner || "";
+      } else if (isStatic) {
+        adCode = settings.adsterra.scripts.banner_300x250 || "";
       }
 
-      if (nativeScript) {
-        adRef.current.innerHTML = nativeScript;
+      if (adCode) {
+        // Clear previous content
+        adRef.current.innerHTML = "";
         
-        // Find and execute scripts
-        const scripts = adRef.current.querySelectorAll('script');
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement('script');
-          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-          if (oldScript.innerHTML) {
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        if (isNative) {
+          // For native banners, inject directly to avoid iframe issues
+          const range = document.createRange();
+          const documentFragment = range.createContextualFragment(adCode);
+          adRef.current.appendChild(documentFragment);
+          
+          // Re-trigger script if it didn't run
+          const scripts = adRef.current.querySelectorAll('script');
+          scripts.forEach(oldScript => {
+             const newScript = document.createElement('script');
+             Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+             newScript.innerHTML = oldScript.innerHTML;
+             oldScript.parentNode?.replaceChild(newScript, oldScript);
+          });
+        } else {
+          // For static banners, use iframe to handle potential document.write
+          const iframe = document.createElement('iframe');
+          iframe.style.width = '300px';
+          iframe.style.height = '250px';
+          iframe.style.border = 'none';
+          iframe.style.overflow = 'hidden';
+          iframe.scrolling = 'no';
+          
+          adRef.current.appendChild(iframe);
+
+          const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
+          if (iframeDoc) {
+            iframeDoc.open();
+            iframeDoc.write(`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <style>
+                  body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; }
+                </style>
+              </head>
+              <body>${adCode}</body>
+              </html>
+            `);
+            iframeDoc.close();
           }
-          oldScript.parentNode?.replaceChild(newScript, oldScript);
-        });
+        }
       }
     }
   }, [slot, isEnabled, settings.adsterra.scripts]);

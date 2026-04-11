@@ -69,7 +69,7 @@ export default function HomePage() {
       </section>
 
       {/* 3. Monetized Ad Slot */}
-      <section className="section-wrapper reveal">
+      <section className="section-wrapper">
          <AdBanner slot="home-mid" style={{ margin: '40px 0' }} />
       </section>
 
