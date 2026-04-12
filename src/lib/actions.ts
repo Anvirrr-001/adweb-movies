@@ -9,20 +9,89 @@ import { execSync } from 'child_process';
 const DATA_PATH = path.join(process.cwd(), 'src/lib/movies.json');
 const SETTINGS_PATH = path.join(process.cwd(), 'src/lib/settings.json');
 
-// Helper to run git commands
-async function syncToGithub() {
-  try {
-    // Check if there are changes to commit
-    const status = execSync('git status --porcelain').toString();
-    if (!status) return true; // Nothing to commit
+// GitHub API details for production sync - DO NOT hardcode tokens here
+const GITHUB_REPO = process.env.GITHUB_REPO || 'Anvirrr-001/adweb-movies';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-    execSync('git add .');
-    execSync('git commit -m "System: Update content registry"');
-    execSync('git push');
+/**
+ * Universal Sync: Works locally via Git CLI or in production via GitHub API
+ */
+async function syncToGithub(filePath: string, content: string, message: string) {
+  // 1. Attempt Local Write (fails silently in read-only production)
+  try {
+    fs.writeFileSync(filePath, content, 'utf-8');
+  } catch (err: any) {
+    if (err.code === 'EROFS') {
+      console.log('Production Environment: Read-only FS detected. Proceeding with API sync.');
+    } else {
+      throw err;
+    }
+  }
+
+  // 2. Determine Sync Method
+  const isProduction = process.env.NODE_ENV === 'production' || !fs.existsSync(path.join(process.cwd(), '.git'));
+
+  if (!isProduction) {
+    try {
+      console.log('Local Environment: Syncing via Git CLI...');
+      execSync('git add .');
+      execSync(`git commit -m "${message}"`);
+      execSync('git push');
+      return true;
+    } catch (error: any) {
+      console.error('Local Git Sync Error:', error.message);
+      // Fallback to API if CLI fails (e.g. no git installed)
+    }
+  }
+
+  // 3. Production/Fallback: Sync via GitHub API
+  return await syncToGithubAPI(filePath, content, message);
+}
+
+async function syncToGithubAPI(filePath: string, content: string, message: string) {
+  if (!GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN environment variable is missing.');
+  }
+
+  const relativePath = path.relative(process.cwd(), filePath).replace(/\\/g, '/');
+  const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${relativePath}`;
+
+  try {
+    // Get current file info (for SHA)
+    const getRes = await fetch(apiUrl, {
+      headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+    });
+
+    let sha = '';
+    if (getRes.ok) {
+      const fileData = await getRes.json();
+      sha = fileData.sha;
+    }
+
+    // Update file
+    const putRes = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        content: Buffer.from(content).toString('base64'),
+        sha: sha || undefined
+      })
+    });
+
+    if (!putRes.ok) {
+      const errorData = await putRes.json();
+      throw new Error(`GitHub API Error: ${errorData.message}`);
+    }
+
+    console.log(`API Sync Successful: ${relativePath}`);
     return true;
   } catch (error: any) {
-    console.error('Git synchronization error:', error.message);
-    throw new Error(`Git Push Failed: ${error.message}`);
+    console.error('GitHub API Sync Error:', error.message);
+    throw new Error(`Database Synchronization Failed: ${error.message}`);
   }
 }
 
@@ -35,20 +104,12 @@ function readData(): Movie[] {
   }
 }
 
-function writeData(data: Movie[]) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
-}
-
 function readSettings() {
   try {
     return JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf-8'));
   } catch (e) {
     return null;
   }
-}
-
-function writeSettings(settings: any) {
-  fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2), 'utf-8');
 }
 
 export async function addMovie(formData: FormData) {
@@ -92,10 +153,8 @@ export async function addMovie(formData: FormData) {
       duration: "140m",
     };
 
-    writeData([...currentMovies, newMovie]);
-    
-    // Sync to Git
-    await syncToGithub();
+    const updatedData = JSON.stringify([...currentMovies, newMovie], null, 2);
+    await syncToGithub(DATA_PATH, updatedData, "System: Add movie to registry");
 
     revalidatePath('/');
     revalidatePath('/movies');
@@ -129,10 +188,8 @@ export async function editMovie(id: number, formData: FormData) {
     };
 
     currentMovies[index] = updatedMovie;
-    writeData(currentMovies);
-    
-    // Sync to Git
-    await syncToGithub();
+    const updatedData = JSON.stringify(currentMovies, null, 2);
+    await syncToGithub(DATA_PATH, updatedData, `System: Edit movie ${id}`);
 
     revalidatePath(`/movie/${id}`);
     revalidatePath('/');
@@ -147,9 +204,8 @@ export async function deleteMovie(id: number) {
   try {
     const currentMovies = readData();
     const updatedMovies = currentMovies.filter(m => m.id !== id);
-    writeData(updatedMovies);
-    
-    await syncToGithub();
+    const updatedData = JSON.stringify(updatedMovies, null, 2);
+    await syncToGithub(DATA_PATH, updatedData, `System: Delete movie ${id}`);
 
     revalidatePath('/');
     revalidatePath('/movies');
@@ -174,9 +230,8 @@ export async function updateSettings(formData: FormData) {
     settings.adsterra.verification_tag = formData.get('adsterra_verification') as string;
     settings.site.ads_txt = formData.get('ads_txt') as string;
 
-    writeSettings(settings);
-    
-    await syncToGithub();
+    const updatedSettings = JSON.stringify(settings, null, 2);
+    await syncToGithub(SETTINGS_PATH, updatedSettings, "System: Update site configuration");
 
     revalidatePath('/');
     revalidatePath('/movies');
