@@ -18,6 +18,20 @@
     "review_content": "James Cameron returns to Pandora with a darker, more visceral chapter. The 'Ash People' introduce a moral complexity previously unseen in the franchise. The visual fidelity is unmatched, pushing the boundaries of CGI once again."
   },
   {
+    "id": 32,
+    "title": "Pirmate 2025",
+    "poster_path": "https://img.youtube.com/vi/nAzt8VZ0hug/maxresdefault.jpg",
+    "backdrop_path": "https://img.youtube.com/vi/nAzt8VZ0hug/maxresdefault.jpg",
+    "release_date": "2025-01-01",
+    "vote_average": 8.5,
+    "overview": "Cinematic production added via System Dashboard override.",
+    "genre_ids": [28],
+    "trailer_id": "nAzt8VZ0hug",
+    "quality": "UHD 4K",
+    "duration": "130m",
+    "review_content": "Professional cinematic breakdown incoming."
+  },
+  {
     "id": 2,
     "title": "Avengers: Doomsday",
     "poster_path": "https://img.youtube.com/vi/bKjaQWOM3fo/maxresdefault.jpg",

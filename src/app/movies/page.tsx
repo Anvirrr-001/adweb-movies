@@ -2,7 +2,7 @@ import { getMovies, getSettings } from "@/lib/data.server";
 import MoviesList from "@/components/MoviesList";
 
 export const metadata = {
-  title: "Explore Movies | MOVIES2026",
+  title: "Explore Movies | WatchTrailers",
   description: "Browse our extensive database of the latest movie trailers and reviews.",
 };
 
