@@ -18,14 +18,46 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
   
   // Movie State
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [status, setStatus] = useState<{type: 'success' | 'error', message: string} | null>(null);
   const movieFormRef = useRef<HTMLFormElement>(null);
 
   // Stats
   const stats = useMemo(() => ({
     totalMovies: initialMovies.length,
     originals: initialMovies.filter(m => m.id >= 10).length,
-    avgRating: (initialMovies.reduce((acc, m) => acc + m.vote_average, 0) / initialMovies.length).toFixed(1)
+    avgRating: initialMovies.length > 0 
+      ? (initialMovies.reduce((acc, m) => acc + (m.vote_average || 0), 0) / initialMovies.length).toFixed(1)
+      : "0.0"
   }), [initialMovies]);
+
+  const handleAction = async (formData: FormData) => {
+    setIsPending(true);
+    setStatus(null);
+    try {
+      let result;
+      if (editingMovie) {
+        result = await editMovie(editingMovie.id, formData);
+      } else {
+        result = await addMovie(formData);
+      }
+
+      if (result.success) {
+        setStatus({ type: 'success', message: 'Successfully Saved and Pushed to GitHub!' });
+        setEditingMovie(null);
+        movieFormRef.current?.reset();
+      } else {
+        setStatus({ type: 'error', message: result.error || 'System failed to process change.' });
+      }
+    } catch (e: any) {
+      setStatus({ type: 'error', message: e.message || 'Fatal terminal error.' });
+    } finally {
+      setIsPending(false);
+      // Auto-clear success message after 5 seconds
+    }
+  };
+
+  const clearStatus = () => setStatus(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,6 +143,15 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
           <Link href="/" className="btn btn-outline btn-sm">Preview Live Site</Link>
         </header>
 
+        {/* Status Notification */}
+        {status && (
+          <div className={`status-banner ${status.type} animate-slide-down`}>
+            <span className="icon">{status.type === 'success' ? '✅' : '❌'}</span>
+            <span className="message">{status.message}</span>
+            <button onClick={clearStatus} className="close-btn">×</button>
+          </div>
+        )}
+
         {/* Stats Overview */}
         <section className="stats-row">
           <div className="stat-card">
@@ -141,15 +182,7 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                   <form 
                     key={editingMovie ? editingMovie.id : 'new-registration'}
                     ref={movieFormRef}
-                    action={async (formData) => {
-                      if (editingMovie) {
-                        await editMovie(editingMovie.id, formData);
-                        setEditingMovie(null);
-                      } else {
-                        await addMovie(formData);
-                      }
-                      movieFormRef.current?.reset();
-                    }}
+                    action={handleAction}
                   >
                     <div className="form-group">
                       <label>YouTube Link / ID (Primary Source)</label>
@@ -159,69 +192,39 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                         placeholder="https://www.youtube.com/watch?v=..."
                         required 
                         style={{ background: 'var(--surface-raised)', border: '1px solid var(--accent)' }}
-                        onChange={async (e) => {
-                          const val = e.target.value;
-                          if (val && !editingMovie) {
-                            // Extract ID
-                            let videoId = val;
-                            if (val.includes('v=')) videoId = val.split('v=')[1].split('&')[0];
-                            else if (val.includes('youtu.be/')) videoId = val.split('youtu.be/')[1].split('?')[0];
-
-                            if (videoId && videoId.length === 11) {
-                              try {
-                                const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
-                                const data = await res.json();
-                                if (data.title) {
-                                  const titleInput = movieFormRef.current?.querySelector('input[name="title"]') as HTMLInputElement;
-                                  if (titleInput && !titleInput.value) titleInput.value = data.title;
-                                }
-                              } catch(e) {}
-                            }
-                            
-                            const dateInput = movieFormRef.current?.querySelector('input[name="release_date"]') as HTMLInputElement;
-                            if (dateInput && !dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
-                          }
-                        }}
                       />
-                      <p className="hint">Poster and Trailer ID will be auto-synced from this link.</p>
+                      <p className="hint">The movie link that will be updated on the website.</p>
                     </div>
 
                     <div className="form-group">
-                      <label>Production Title (Optional - Auto fetched)</label>
-                      <input name="title" defaultValue={editingMovie?.title} placeholder="e.g. Avatar: Fire and Ash" />
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Premiere Date (Optional)</label>
-                        <input name="release_date" type="date" defaultValue={editingMovie?.release_date} />
-                      </div>
-                      <div className="form-group">
-                        <label>Audience Score</label>
-                        <input name="vote_average" type="number" step="0.1" defaultValue={editingMovie?.vote_average || 8.0} />
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Quality</label>
-                        <input name="quality" defaultValue={editingMovie?.quality || "HD"} placeholder="HD" />
-                      </div>
-                      <div className="form-group">
-                        <label>Runtime</label>
-                        <input name="duration" defaultValue={editingMovie?.duration || "120m"} placeholder="120m" />
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label>Editorial Review Breakdown</label>
-                      <textarea name="review_content" rows={6} defaultValue={editingMovie?.review_content} placeholder="Write professional cinematic breakdown..."></textarea>
+                      <label>Production Title (Name of the movie)</label>
+                      <input 
+                        name="title" 
+                        defaultValue={editingMovie?.title} 
+                        placeholder="e.g. Avengers: Doomsday" 
+                        required
+                      />
+                      <p className="hint">This name will appear on the dashboard and main page.</p>
                     </div>
 
                     <div className="form-actions" style={{ marginTop: '24px' }}>
-                      <button type="submit" className="btn btn-primary w-full">Commit Changes to Portal</button>
+                      <button 
+                        type="submit" 
+                        className={`btn btn-primary w-full ${isPending ? 'loading' : ''}`}
+                        disabled={isPending}
+                      >
+                        {isPending ? 'Synchronizing with GitHub...' : 'Update & Push to GitHub'}
+                      </button>
                       {editingMovie && (
-                        <button type="button" onClick={() => setEditingMovie(null)} className="btn btn-glass w-full" style={{ marginTop: '12px' }}>Cancel Edit</button>
+                        <button 
+                          type="button" 
+                          onClick={() => setEditingMovie(null)} 
+                          className="btn btn-glass w-full" 
+                          style={{ marginTop: '12px' }}
+                          disabled={isPending}
+                        >
+                          Cancel Edit
+                        </button>
                       )}
                     </div>
                   </form>
@@ -239,9 +242,14 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                           <span className="date">{movie.release_date} • {movie.quality}</span>
                         </div>
                         <div className="item-controls">
-                          <button onClick={() => setEditingMovie(movie)} className="icon-btn">✏️</button>
-                          <form action={async () => await deleteMovie(movie.id)}>
-                            <button type="submit" className="icon-btn danger">🗑️</button>
+                          <button onClick={() => setEditingMovie(movie)} className="icon-btn" title="Edit">✏️</button>
+                          <form action={async () => {
+                            if (confirm('Permanently delete this item from GitHub registry?')) {
+                              const res = await deleteMovie(movie.id);
+                              if (!res.success) alert(res.error);
+                            }
+                          }}>
+                            <button type="submit" className="icon-btn danger" title="Delete">🗑️</button>
                           </form>
                         </div>
                       </div>
@@ -264,7 +272,13 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                 </div>
               </header>
 
-              <form action={updateSettings} className="settings-form">
+              <form action={async (formData) => {
+                setIsPending(true);
+                const res = await updateSettings(formData);
+                if (res.success) setStatus({type:'success', message: 'Monetization strategy updated and pushed!'});
+                else setStatus({type:'error', message: res.error || 'Update failed'});
+                setIsPending(false);
+              }} className="settings-form">
                 {/* 1. Global Master Control */}
                 <div className="card-premium glass" style={{ marginBottom: '32px', border: '1px solid var(--accent)' }}>
                   <div className="form-group checkbox-group" style={{ margin: 0, padding: '24px' }}>
@@ -347,8 +361,8 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                 </div>
 
                 <div className="form-actions sticky-footer" style={{ marginTop: '40px' }}>
-                   <button type="submit" className="btn btn-primary w-full" style={{ height: '56px', fontSize: '1.1rem' }}>
-                     Update Monetization Strategy
+                   <button type="submit" className="btn btn-primary w-full" disabled={isPending} style={{ height: '56px', fontSize: '1.1rem' }}>
+                     {isPending ? 'Syncing...' : 'Update Monetization Strategy'}
                    </button>
                 </div>
               </form>
@@ -358,12 +372,20 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
           {activeTab === 'settings' && (
             <section className="settings-panel card-premium glass" style={{ maxWidth: '800px' }}>
               <h2>Infrastructure Matrix</h2>
-              <form action={updateSettings} className="settings-form">
+              <form action={async (formData) => {
+                setIsPending(true);
+                const res = await updateSettings(formData);
+                if (res.success) setStatus({type:'success', message: 'Infrastructure updated and pushed!'});
+                else setStatus({type:'error', message: res.error || 'Update failed'});
+                setIsPending(false);
+              }} className="settings-form">
                 <div className="form-group">
                   <label>Ads.txt Deployment</label>
                   <textarea name="ads_txt" rows={10} defaultValue={initialSettings.site.ads_txt} placeholder="adsterra.com, XXXXX, DIRECT" style={{ fontFamily: 'monospace' }}></textarea>
                 </div>
-                <button type="submit" className="btn btn-primary">Update Infrastructure</button>
+                <button type="submit" className="btn btn-primary" disabled={isPending}>
+                  {isPending ? 'Syncing...' : 'Update Infrastructure'}
+                </button>
               </form>
             </section>
           )}
@@ -413,7 +435,6 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
         .stat-card .value { font-size: 1.8rem; font-weight: 900; }
 
         .panel-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; }
-        .max-w-2 { max-width: 800px; }
         
         .list-scroll { max-height: 600px; overflow-y: auto; padding-right: 1rem; }
         .list-item { 
@@ -433,6 +454,52 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
         .settings-form { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; }
         .hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; }
         .status-pill { font-size: 0.65rem; font-weight: 900; padding: 4px 10px; border-radius: 4px; background: #22c55e20; color: #22c55e; border: 1px solid #22c55e40; }
+
+        /* Status Notification Banner */
+        .status-banner {
+          margin-bottom: 2rem;
+          padding: 1.25rem 2rem;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          position: relative;
+          font-weight: 600;
+        }
+        .status-banner.success {
+          background: rgba(34, 197, 94, 0.15);
+          border: 1px solid rgba(34, 197, 94, 0.3);
+          color: #4ade80;
+        }
+        .status-banner.error {
+          background: rgba(239, 68, 68, 0.15);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          color: #f87171;
+        }
+        .status-banner .close-btn {
+          position: absolute;
+          right: 1rem;
+          background: none;
+          border: none;
+          color: currentColor;
+          font-size: 1.5rem;
+          cursor: pointer;
+          opacity: 0.5;
+        }
+        .status-banner .close-btn:hover { opacity: 1; }
+
+        /* Loading state for buttons */
+        .btn.loading {
+          opacity: 0.7;
+          cursor: wait;
+        }
+
+        /* Animations */
+        @keyframes slide-down {
+          from { transform: translateY(-20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-down { animation: slide-down 0.4s ease-out; }
 
         /* Login Styling */
         .login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; }

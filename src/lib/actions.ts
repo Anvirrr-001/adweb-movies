@@ -4,10 +4,27 @@ import fs from 'fs';
 import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { Movie } from './types';
+import { execSync } from 'child_process';
 
 const DATA_PATH = path.join(process.cwd(), 'src/lib/movies.json');
-
 const SETTINGS_PATH = path.join(process.cwd(), 'src/lib/settings.json');
+
+// Helper to run git commands
+async function syncToGithub() {
+  try {
+    // Check if there are changes to commit
+    const status = execSync('git status --porcelain').toString();
+    if (!status) return true; // Nothing to commit
+
+    execSync('git add .');
+    execSync('git commit -m "System: Update content registry"');
+    execSync('git push');
+    return true;
+  } catch (error: any) {
+    console.error('Git synchronization error:', error.message);
+    throw new Error(`Git Push Failed: ${error.message}`);
+  }
+}
 
 function readData(): Movie[] {
   try {
@@ -35,69 +52,21 @@ function writeSettings(settings: any) {
 }
 
 export async function addMovie(formData: FormData) {
-  const currentMovies = readData();
-  const nextId = Math.max(...currentMovies.map(m => m.id), 0) + 1;
+  try {
+    const currentMovies = readData();
+    const nextId = Math.max(...currentMovies.map(m => m.id), 0) + 1;
 
-  const youtubeLink = formData.get('youtube_link') as string;
-  const videoId = extractYoutubeId(youtubeLink);
-  
-  // Auto-generate high-res thumbnail from YouTube ID
-  const posterPath = videoId 
-    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
-    : (formData.get('poster_path') as string || "/placeholder.jpg");
+    const youtubeLink = formData.get('youtube_link') as string;
+    const videoId = extractYoutubeId(youtubeLink);
+    
+    if (!videoId) {
+      return { success: false, error: "Invalid YouTube URL provided." };
+    }
 
-  let title = formData.get('title') as string;
-  if (!title && videoId) {
-    try {
-      const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
-      if (res.ok) {
-        const data = await res.json();
-        title = data.title;
-      }
-    } catch(e) {}
-  }
-  if (!title) title = "Unknown Title";
+    const posterPath = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
-  let release_date = formData.get('release_date') as string;
-  if (!release_date) release_date = new Date().toISOString().split('T')[0];
-
-  const newMovie: Movie = {
-    id: nextId,
-    title: title,
-    poster_path: posterPath,
-    backdrop_path: posterPath,
-    release_date: release_date,
-    vote_average: parseFloat(formData.get('vote_average') as string) || 8.0,
-    overview: formData.get('overview') as string || "No overview available.",
-    genre_ids: [28], 
-    trailer_id: videoId || "placeholder",
-    review_content: formData.get('review_content') as string || "Editorial breakdown pending.",
-    quality: formData.get('quality') as string || "HD",
-    duration: formData.get('duration') as string || "120m",
-  };
-
-  writeData([...currentMovies, newMovie]);
-  revalidatePath('/');
-  revalidatePath('/movies');
-  revalidatePath('/dashboard');
-}
-
-export async function editMovie(id: number, formData: FormData) {
-  const currentMovies = readData();
-  const index = currentMovies.findIndex(m => m.id === id);
-  if (index === -1) return;
-
-  const youtubeLink = formData.get('youtube_link') as string;
-  const videoId = extractYoutubeId(youtubeLink) || currentMovies[index].trailer_id;
-  
-  const posterPath = videoId 
-    ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
-    : currentMovies[index].poster_path;
-
-  let title = formData.get('title') as string;
-  if (!title) {
-    title = currentMovies[index].title;
-    if (videoId && title === "Unknown Title") {
+    let title = formData.get('title') as string;
+    if (!title) {
       try {
         const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
         if (res.ok) {
@@ -106,66 +75,116 @@ export async function editMovie(id: number, formData: FormData) {
         }
       } catch(e) {}
     }
+    if (!title) title = "New Movie Entry";
+
+    const newMovie: Movie = {
+      id: nextId,
+      title: title,
+      poster_path: posterPath,
+      backdrop_path: posterPath,
+      release_date: new Date().toISOString().split('T')[0],
+      vote_average: 8.5,
+      overview: "Cinematic production added via System Dashboard.",
+      genre_ids: [28], 
+      trailer_id: videoId,
+      review_content: "Professional cinematic breakdown incoming.",
+      quality: "UHD 4K",
+      duration: "140m",
+    };
+
+    writeData([...currentMovies, newMovie]);
+    
+    // Sync to Git
+    await syncToGithub();
+
+    revalidatePath('/');
+    revalidatePath('/movies');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
   }
+}
 
-  let release_date = formData.get('release_date') as string;
-  if (!release_date) release_date = currentMovies[index].release_date || new Date().toISOString().split('T')[0];
+export async function editMovie(id: number, formData: FormData) {
+  try {
+    const currentMovies = readData();
+    const index = currentMovies.findIndex(m => m.id === id);
+    if (index === -1) return { success: false, error: "Movie not found." };
 
-  const updatedMovie: Movie = {
-    ...currentMovies[index],
-    title: title,
-    poster_path: posterPath,
-    backdrop_path: posterPath,
-    release_date: release_date,
-    vote_average: parseFloat(formData.get('vote_average') as string) || currentMovies[index].vote_average,
-    overview: formData.get('overview') as string || currentMovies[index].overview,
-    trailer_id: videoId,
-    review_content: formData.get('review_content') as string || currentMovies[index].review_content,
-    quality: formData.get('quality') as string || currentMovies[index].quality,
-    duration: formData.get('duration') as string || currentMovies[index].duration,
-  };
+    const youtubeLink = formData.get('youtube_link') as string;
+    const videoId = extractYoutubeId(youtubeLink) || currentMovies[index].trailer_id;
+    
+    const posterPath = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
-  currentMovies[index] = updatedMovie;
-  writeData(currentMovies);
-  
-  revalidatePath(`/movie/${id}`);
-  revalidatePath('/');
-  revalidatePath('/dashboard');
+    let title = formData.get('title') as string;
+    if (!title) title = currentMovies[index].title;
+
+    const updatedMovie: Movie = {
+      ...currentMovies[index],
+      title: title,
+      poster_path: posterPath,
+      backdrop_path: posterPath,
+      trailer_id: videoId,
+    };
+
+    currentMovies[index] = updatedMovie;
+    writeData(currentMovies);
+    
+    // Sync to Git
+    await syncToGithub();
+
+    revalidatePath(`/movie/${id}`);
+    revalidatePath('/');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
 }
 
 export async function deleteMovie(id: number) {
-  const currentMovies = readData();
-  const updatedMovies = currentMovies.filter(m => m.id !== id);
-  writeData(updatedMovies);
-  
-  revalidatePath('/');
-  revalidatePath('/movies');
-  revalidatePath('/dashboard');
+  try {
+    const currentMovies = readData();
+    const updatedMovies = currentMovies.filter(m => m.id !== id);
+    writeData(updatedMovies);
+    
+    await syncToGithub();
+
+    revalidatePath('/');
+    revalidatePath('/movies');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
 }
 
 export async function updateSettings(formData: FormData) {
-  const settings = readSettings();
-  if (!settings) return;
+  try {
+    const settings = readSettings();
+    if (!settings) return { success: false, error: "Settings file not found." };
 
-  settings.adsterra.enabled = formData.get('adsterra_enabled') === 'on';
-  settings.adsterra.direct_link = formData.get('adsterra_direct_link') as string;
-  settings.adsterra.scripts.social_bar = formData.get('adsterra_social_bar') as string;
-  settings.adsterra.scripts.popunder = formData.get('adsterra_popunder') as string;
-  settings.adsterra.scripts.native_banner = formData.get('adsterra_native_banner') as string;
-  settings.adsterra.scripts.banner_300x250 = formData.get('adsterra_banner_300x250') as string;
+    settings.adsterra.enabled = formData.get('adsterra_enabled') === 'on';
+    settings.adsterra.direct_link = formData.get('adsterra_direct_link') as string;
+    settings.adsterra.scripts.social_bar = formData.get('adsterra_social_bar') as string;
+    settings.adsterra.scripts.popunder = formData.get('adsterra_popunder') as string;
+    settings.adsterra.scripts.native_banner = formData.get('adsterra_native_banner') as string;
+    settings.adsterra.scripts.banner_300x250 = formData.get('adsterra_banner_300x250') as string;
+    settings.adsterra.verification_tag = formData.get('adsterra_verification') as string;
+    settings.site.ads_txt = formData.get('ads_txt') as string;
 
-  // Cleanup old keys
-  delete settings.adsterra.scripts.home_mid;
-  delete settings.adsterra.scripts.archive_bottom;
-  delete settings.adsterra.scripts.movie_sidebar_top;
-  delete settings.adsterra.scripts.movie_sidebar_bottom;
-  settings.adsterra.verification_tag = formData.get('adsterra_verification') as string;
-  settings.site.ads_txt = formData.get('ads_txt') as string;
+    writeSettings(settings);
+    
+    await syncToGithub();
 
-  writeSettings(settings);
-  revalidatePath('/');
-  revalidatePath('/movies');
-  revalidatePath('/dashboard');
+    revalidatePath('/');
+    revalidatePath('/movies');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
 }
 
 function extractYoutubeId(url: string): string | undefined {
