@@ -75,9 +75,9 @@ export async function editMovie(id: number, formData: FormData) {
   const youtubeLink = formData.get('youtube_link') as string;
   const videoId = extractYoutubeId(youtubeLink) || currentMovies[index].trailer_id;
   
-  const posterPath = videoId && youtubeLink.includes('youtube')
+  const posterPath = videoId 
     ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
-    : formData.get('poster_path') as string;
+    : currentMovies[index].poster_path;
 
   const updatedMovie: Movie = {
     ...currentMovies[index],

@@ -139,6 +139,7 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                     {editingMovie ? 'Edit Production' : 'Register New Title'}
                   </h2>
                   <form 
+                    key={editingMovie ? editingMovie.id : 'new-registration'}
                     ref={movieFormRef}
                     action={async (formData) => {
                       if (editingMovie) {
