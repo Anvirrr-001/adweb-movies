@@ -62,6 +62,19 @@ export default function MovieCard({ movie, downloadLink, featured }: MovieCardPr
       </div>
       {/* Full card clickable to details page */}
       <Link href={`/movie/${movie.id}`} style={{ position: 'absolute', inset: 0, zIndex: 5 }}></Link>
+      
+      {/* Explicit Download 4K Button for Direct Ad Link */}
+      <div style={{ position: 'relative', zIndex: 20, padding: '10px' }}>
+         <a 
+           href={downloadLink} 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           className="btn btn-premium" 
+           style={{ width: '100%', fontSize: '14px', padding: '10px 0', display: 'flex', justifyContent: 'center', background: 'var(--accent)', color: 'black', fontWeight: 'bold' }}
+         >
+            📥 DOWNLOAD 4K
+         </a>
+      </div>
     </div>
   );
 }

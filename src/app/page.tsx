@@ -68,6 +68,13 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Prominent Download Action Banner */}
+      <section className="section-wrapper reveal" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+         <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-premium" style={{ padding: '20px 48px', fontSize: '20px', width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'center', background: 'linear-gradient(90deg, #19c37d, #0f8554)', boxShadow: '0 8px 30px rgba(25, 195, 125, 0.4)' }}>
+           <span>📥 DOWNLOAD TRENDING MOVIES IN 4K</span>
+         </a>
+      </section>
+
       {/* 3. Monetized Ad Slot */}
       <section className="section-wrapper">
          <AdBanner slot="home-mid" style={{ margin: '40px 0' }} />
@@ -85,6 +92,13 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Second Download Action Banner */}
+      <section className="section-wrapper reveal" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+         <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-premium" style={{ padding: '20px 48px', fontSize: '20px', width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'center', background: 'linear-gradient(90deg, #ff4d4d, #cc0000)', boxShadow: '0 8px 30px rgba(255, 77, 77, 0.4)' }}>
+           <span>▶ WATCH ULTRA HD LEGENDS FREE</span>
+         </a>
       </section>
 
       {/* 5. Genre Spotlight Banner */}
@@ -111,6 +125,13 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Third Download Action Banner */}
+      <section className="section-wrapper reveal" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+         <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-glass" style={{ padding: '20px 48px', fontSize: '20px', width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'center', border: '2px solid var(--accent)', color: 'var(--accent)', background: 'rgba(25, 195, 125, 0.1)' }}>
+           <span>⚡ DIRECT DOWNLOAD LAUNCHERS</span>
+         </a>
       </section>
 
       {/* 7. Sci-Fi Selection */}
