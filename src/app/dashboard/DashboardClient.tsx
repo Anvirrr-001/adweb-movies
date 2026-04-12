@@ -159,19 +159,42 @@ export default function DashboardClient({ initialMovies, initialSettings }: Dash
                         placeholder="https://www.youtube.com/watch?v=..."
                         required 
                         style={{ background: 'var(--surface-raised)', border: '1px solid var(--accent)' }}
+                        onChange={async (e) => {
+                          const val = e.target.value;
+                          if (val && !editingMovie) {
+                            // Extract ID
+                            let videoId = val;
+                            if (val.includes('v=')) videoId = val.split('v=')[1].split('&')[0];
+                            else if (val.includes('youtu.be/')) videoId = val.split('youtu.be/')[1].split('?')[0];
+
+                            if (videoId && videoId.length === 11) {
+                              try {
+                                const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+                                const data = await res.json();
+                                if (data.title) {
+                                  const titleInput = movieFormRef.current?.querySelector('input[name="title"]') as HTMLInputElement;
+                                  if (titleInput && !titleInput.value) titleInput.value = data.title;
+                                }
+                              } catch(e) {}
+                            }
+                            
+                            const dateInput = movieFormRef.current?.querySelector('input[name="release_date"]') as HTMLInputElement;
+                            if (dateInput && !dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
+                          }
+                        }}
                       />
                       <p className="hint">Poster and Trailer ID will be auto-synced from this link.</p>
                     </div>
 
                     <div className="form-group">
-                      <label>Production Title</label>
-                      <input name="title" defaultValue={editingMovie?.title} placeholder="e.g. Avatar: Fire and Ash" required />
+                      <label>Production Title (Optional - Auto fetched)</label>
+                      <input name="title" defaultValue={editingMovie?.title} placeholder="e.g. Avatar: Fire and Ash" />
                     </div>
 
                     <div className="form-row">
                       <div className="form-group">
-                        <label>Premiere Date</label>
-                        <input name="release_date" type="date" defaultValue={editingMovie?.release_date} required />
+                        <label>Premiere Date (Optional)</label>
+                        <input name="release_date" type="date" defaultValue={editingMovie?.release_date} />
                       </div>
                       <div className="form-group">
                         <label>Audience Score</label>

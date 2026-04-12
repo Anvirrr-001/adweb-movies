@@ -46,12 +46,27 @@ export async function addMovie(formData: FormData) {
     ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
     : (formData.get('poster_path') as string || "/placeholder.jpg");
 
+  let title = formData.get('title') as string;
+  if (!title && videoId) {
+    try {
+      const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+      if (res.ok) {
+        const data = await res.json();
+        title = data.title;
+      }
+    } catch(e) {}
+  }
+  if (!title) title = "Unknown Title";
+
+  let release_date = formData.get('release_date') as string;
+  if (!release_date) release_date = new Date().toISOString().split('T')[0];
+
   const newMovie: Movie = {
     id: nextId,
-    title: formData.get('title') as string,
+    title: title,
     poster_path: posterPath,
     backdrop_path: posterPath,
-    release_date: formData.get('release_date') as string,
+    release_date: release_date,
     vote_average: parseFloat(formData.get('vote_average') as string) || 8.0,
     overview: formData.get('overview') as string || "No overview available.",
     genre_ids: [28], 
@@ -79,18 +94,35 @@ export async function editMovie(id: number, formData: FormData) {
     ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` 
     : currentMovies[index].poster_path;
 
+  let title = formData.get('title') as string;
+  if (!title) {
+    title = currentMovies[index].title;
+    if (videoId && title === "Unknown Title") {
+      try {
+        const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+        if (res.ok) {
+          const data = await res.json();
+          title = data.title;
+        }
+      } catch(e) {}
+    }
+  }
+
+  let release_date = formData.get('release_date') as string;
+  if (!release_date) release_date = currentMovies[index].release_date || new Date().toISOString().split('T')[0];
+
   const updatedMovie: Movie = {
     ...currentMovies[index],
-    title: formData.get('title') as string,
+    title: title,
     poster_path: posterPath,
     backdrop_path: posterPath,
-    release_date: formData.get('release_date') as string,
-    vote_average: parseFloat(formData.get('vote_average') as string),
-    overview: formData.get('overview') as string,
+    release_date: release_date,
+    vote_average: parseFloat(formData.get('vote_average') as string) || currentMovies[index].vote_average,
+    overview: formData.get('overview') as string || currentMovies[index].overview,
     trailer_id: videoId,
-    review_content: formData.get('review_content') as string,
-    quality: formData.get('quality') as string,
-    duration: formData.get('duration') as string,
+    review_content: formData.get('review_content') as string || currentMovies[index].review_content,
+    quality: formData.get('quality') as string || currentMovies[index].quality,
+    duration: formData.get('duration') as string || currentMovies[index].duration,
   };
 
   currentMovies[index] = updatedMovie;
