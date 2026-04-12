@@ -1,38 +1,46 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSettings } from "@/components/SiteSettingsProvider";
+import Script from "next/script";
 
 export default function AdsterraController() {
   const settings = useSettings();
   const adsterra = settings.adsterra;
+  const [scripts, setScripts] = useState<{ src?: string; code?: string; id: string }[]>([]);
 
   useEffect(() => {
     if (!adsterra.enabled) return;
 
-    const injectGlobalScript = (htmlString: string) => {
+    const extractScripts = (htmlString: string, type: string) => {
       if (!htmlString) return;
       const tmpDiv = document.createElement("div");
       tmpDiv.innerHTML = htmlString;
-      const scripts = tmpDiv.querySelectorAll("script");
-      
-      scripts.forEach(oldScript => {
-        // Prevent duplicate injection
-        if (oldScript.src && document.querySelector(`script[src="${oldScript.src}"]`)) return;
-
-        const newScript = document.createElement("script");
-        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        if (oldScript.innerHTML) {
-          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-        }
-        document.body.appendChild(newScript);
-      });
+      const extracted = Array.from(tmpDiv.querySelectorAll("script")).map((s, i) => ({
+        src: s.src || undefined,
+        code: s.innerHTML || undefined,
+        id: `adsterra-${type}-${i}`
+      }));
+      return extracted;
     };
 
-    injectGlobalScript(adsterra.scripts?.popunder || "");
-    injectGlobalScript(adsterra.scripts?.social_bar || "");
-    
+    const popunderScripts = extractScripts(adsterra.scripts?.popunder || "", "popunder") || [];
+    const socialBarScripts = extractScripts(adsterra.scripts?.social_bar || "", "socialbar") || [];
+
+    setScripts([...popunderScripts, ...socialBarScripts]);
   }, [adsterra]);
 
-  return null;
+  if (!adsterra.enabled) return null;
+
+  return (
+    <>
+      {scripts.map((s) => (
+         s.src ? (
+           <Script key={s.id} id={s.id} src={s.src} strategy="afterInteractive" />
+         ) : s.code ? (
+           <Script key={s.id} id={s.id} strategy="afterInteractive" dangerouslySetInnerHTML={{ __html: s.code }} />
+         ) : null
+      ))}
+    </>
+  );
 }
