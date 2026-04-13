@@ -25,9 +25,37 @@ export async function generateMetadata() {
     ? adsterra.verification_tag.match(/content="([^"]+)"/)?.[1] || ""
     : "";
 
+  const title = `${site.title} | Professional Cinematic Portal`;
+  const description = site.description;
+  const siteUrl = "https://adweb-movies-j34o.vercel.app";
+  const ogImage = "/images/frontpage.jpg";
+
   return {
-    title: `${site.title} | Professional Cinematic Portal`,
-    description: site.description,
+    metadataBase: new URL(siteUrl),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: siteUrl,
+      siteName: site.title,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: site.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
     other: verificationTag ? {
       'adsterra-verification': verificationTag
     } : {}
