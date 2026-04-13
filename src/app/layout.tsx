@@ -81,7 +81,7 @@ export default function RootLayout({
                 <div className="logo-symbol">
                   <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
-                <span className="brand-name">Watch<span>Trailers</span></span>
+                <span className="brand-name">Watch the<span> full movie</span></span>
               </Link>
 
               <SearchBar />
@@ -107,7 +107,7 @@ export default function RootLayout({
                  <div className="logo-symbol" style={{ width: '36px', height: '36px' }}>
                     <svg viewBox="0 0 24 24" style={{ width: '18px' }}><path d="M8 5v14l11-7z"/></svg>
                  </div>
-                 <span className="brand-name" style={{ fontSize: '20px' }}>WatchTrailers</span>
+                 <span className="brand-name" style={{ fontSize: '20px' }}>Watch the full movie</span>
               </div>
               <p style={{ color: 'var(--text-secondary)', maxWidth: '700px', margin: '0 auto 40px', fontSize: '15px' }}>
                 The ultimate destination for cinematic excellence. Stay ahead with official trailers, 
@@ -119,7 +119,7 @@ export default function RootLayout({
                  <Link href="/dashboard" style={{ color: '#fff', fontSize: '14px', textDecoration: 'none', fontWeight: 700 }}>Monetization</Link>
               </div>
               <p style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: 800, letterSpacing: '2px' }}>
-                &copy; {new Date().getFullYear()} WATCHTRAILERS ENTERTAINMENT. PARTNERED WITH ADSTERRA.
+                &copy; {new Date().getFullYear()} WATCH THE FULL MOVIE ENTERTAINMENT. PARTNERED WITH ADSTERRA.
               </p>
             </div>
           </footer>
