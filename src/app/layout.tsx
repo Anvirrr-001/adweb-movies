@@ -28,7 +28,7 @@ export async function generateMetadata() {
   const title = `${site.title} | Professional Cinematic Portal`;
   const description = site.description;
   const siteUrl = "https://adweb-movies-j34o.vercel.app";
-  const ogImage = "/images/frontpage.jpg";
+  const ogImage = "/images/frontpage.png";
 
   return {
     metadataBase: new URL(siteUrl),
