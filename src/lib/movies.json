@@ -19,17 +19,17 @@
   },
   {
     "id": 32,
-    "title": "Pirmate 2025",
-    "poster_path": "https://img.youtube.com/vi/nAzt8VZ0hug/maxresdefault.jpg",
-    "backdrop_path": "https://img.youtube.com/vi/nAzt8VZ0hug/maxresdefault.jpg",
-    "release_date": "2025-01-01",
-    "vote_average": 8.5,
-    "overview": "Cinematic production added via System Dashboard override.",
-    "genre_ids": [28],
-    "trailer_id": "nAzt8VZ0hug",
+    "title": "20th Century Fox",
+    "poster_path": "https://img.youtube.com/vi/y0caojFEPBs/maxresdefault.jpg",
+    "backdrop_path": "https://img.youtube.com/vi/y0caojFEPBs/maxresdefault.jpg",
+    "release_date": "2024-01-01",
+    "vote_average": 9.5,
+    "overview": "The iconic 20th Century Fox cinematic intro in stunning 4K high-fidelity resolution.",
+    "genre_ids": [28, 12, 878],
+    "trailer_id": "y0caojFEPBs",
     "quality": "UHD 4K",
-    "duration": "130m",
-    "review_content": "Professional cinematic breakdown incoming."
+    "duration": "30s",
+    "review_content": "A masterpiece of cinematic history that defined generations of movie-going experiences."
   },
   {
     "id": 2,
