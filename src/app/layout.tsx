@@ -21,9 +21,13 @@ const inter = Inter({
 export async function generateMetadata() {
   const { adsterra, site } = getSettings();
   
-  const verificationTag = adsterra.enabled && adsterra.verification_tag 
-    ? adsterra.verification_tag.match(/content="([^"]+)"/)?.[1] || ""
-    : "";
+  const verificationTagRaw = adsterra.enabled && adsterra.verification_tag ? adsterra.verification_tag : "";
+  let verificationTag = "";
+  
+  if (verificationTagRaw) {
+    const match = verificationTagRaw.match(/content="([^"]+)"/);
+    verificationTag = match ? match[1] : verificationTagRaw.trim();
+  }
 
   const title = `${site.title} | Professional Cinematic Portal`;
   const description = site.description;

@@ -10,24 +10,33 @@ export default function AdsterraController() {
   const [scripts, setScripts] = useState<{ src?: string; code?: string; id: string }[]>([]);
 
   useEffect(() => {
-    if (!adsterra.enabled) return;
+    if (!adsterra.enabled || !adsterra.scripts) return;
 
     const extractScripts = (htmlString: string, type: string) => {
-      if (!htmlString) return;
+      if (!htmlString) return [];
       const tmpDiv = document.createElement("div");
       tmpDiv.innerHTML = htmlString;
-      const extracted = Array.from(tmpDiv.querySelectorAll("script")).map((s, i) => ({
+      return Array.from(tmpDiv.querySelectorAll("script")).map((s, i) => ({
         src: s.src || undefined,
         code: s.innerHTML || undefined,
         id: `adsterra-${type}-${i}`
       }));
-      return extracted;
     };
 
-    const popunderScripts = extractScripts(adsterra.scripts?.popunder || "", "popunder") || [];
-    const socialBarScripts = extractScripts(adsterra.scripts?.social_bar || "", "socialbar") || [];
+    // Extract all global scripts from settings
+    const allExtracted: { src?: string; code?: string; id: string }[] = [];
+    
+    // Specifically target popunder and social bar as global background scripts
+    // But also include any others that are meant to be global
+    Object.entries(adsterra.scripts).forEach(([key, value]) => {
+       // Only inject scripts that are NOT banners (banners are handled by AdBanner)
+       if (key === 'popunder' || key === 'social_bar' || key.includes('global')) {
+         const extracted = extractScripts(value as string, key);
+         allExtracted.push(...extracted);
+       }
+    });
 
-    setScripts([...popunderScripts, ...socialBarScripts]);
+    setScripts(allExtracted);
   }, [adsterra]);
 
   if (!adsterra.enabled) return null;

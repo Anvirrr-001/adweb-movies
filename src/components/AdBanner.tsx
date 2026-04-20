@@ -17,8 +17,10 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
   useEffect(() => {
     if (isEnabled && adRef.current) {
       let adCode = "";
-      const isNative = slot === 'home-mid' || slot === 'archive-bottom' || slot.includes('native');
-      const isStatic = slot === 'detail-sidebar-top' || slot === 'detail-sidebar-bottom' || slot.includes('sidebar');
+      
+      // Map slots to available types
+      const isNative = slot === 'home-mid' || slot === 'archive-bottom' || slot.includes('mid') || slot.includes('bottom') || slot.includes('native');
+      const isStatic = slot === 'detail-sidebar-top' || slot === 'detail-sidebar-bottom' || slot.includes('sidebar') || slot.includes('300x250');
 
       if (isNative) {
         adCode = settings.adsterra.scripts.native_banner || "";
@@ -26,26 +28,32 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
         adCode = settings.adsterra.scripts.banner_300x250 || "";
       }
 
+      // Fallback: if adCode still empty, try to match by partial slot name or just use native as default for main content
+      if (!adCode && slot) {
+        adCode = settings.adsterra.scripts.native_banner || settings.adsterra.scripts.banner_300x250 || "";
+      }
+
       if (adCode) {
-        // Clear previous content
         adRef.current.innerHTML = "";
         
-        if (isNative) {
-          // For native banners, inject directly to avoid iframe issues
-          const range = document.createRange();
-          const documentFragment = range.createContextualFragment(adCode);
-          adRef.current.appendChild(documentFragment);
-          
-          // Re-trigger script if it didn't run
-          const scripts = adRef.current.querySelectorAll('script');
+        if (isNative || !isStatic) {
+          // Native or dynamic injection
+          const container = document.createElement('div');
+          container.innerHTML = adCode;
+          adRef.current.appendChild(container);
+
+          // Execute scripts manually for innerHTML injection
+          const scripts = container.querySelectorAll('script');
           scripts.forEach(oldScript => {
-             const newScript = document.createElement('script');
-             Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-             newScript.innerHTML = oldScript.innerHTML;
-             oldScript.parentNode?.replaceChild(newScript, oldScript);
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            if (oldScript.innerHTML) {
+              newScript.innerHTML = oldScript.innerHTML;
+            }
+            oldScript.parentNode?.replaceChild(newScript, oldScript);
           });
         } else {
-          // For static banners, use iframe to handle potential document.write
+          // Static banners (300x250) often work better in iframes if they use document.write
           const iframe = document.createElement('iframe');
           iframe.style.width = '300px';
           iframe.style.height = '250px';
@@ -62,9 +70,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
               <!DOCTYPE html>
               <html>
               <head>
-                <style>
-                  body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; }
-                </style>
+                <style>body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: transparent; }</style>
               </head>
               <body>${adCode}</body>
               </html>
