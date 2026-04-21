@@ -29,7 +29,7 @@ export default function HomePage() {
             <div className="hero-glow"></div>
           </div>
           <div className="hero-content">
-            <div className="hero-label floating">🔥 Most Anticipated Registry Entry</div>
+            <div className="hero-label floating">🔥 Cloudflare Optimized | Most Anticipated Registry Entry</div>
             <h1 className="hero-title">{spotlightMovie.title}</h1>
             <div className="hero-meta">
               <span className="badge badge-premium">★ {spotlightMovie.vote_average} Registry Score</span>
