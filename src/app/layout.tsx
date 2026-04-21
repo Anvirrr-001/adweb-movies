@@ -18,6 +18,8 @@ const inter = Inter({
   variable: '--font-inter'
 });
 
+export const runtime = 'edge';
+
 export async function generateMetadata() {
   const { adsterra, site } = getSettings();
   
@@ -29,9 +31,9 @@ export async function generateMetadata() {
     verificationTag = match ? match[1] : verificationTagRaw.trim();
   }
 
-  const title = `${site.title} | Professional Cinematic Portal`;
+  const title = `Watch the full movie 4K | Professional Cinematic Portal`;
   const description = site.description;
-  const siteUrl = "https://adweb-movies-j34o.vercel.app";
+  const siteUrl = "https://adweb-movies.pages.dev";
   const ogImage = "/images/frontpage.png";
 
   return {
@@ -85,7 +87,7 @@ export default function RootLayout({
                 <div className="logo-symbol">
                   <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
-                <span className="brand-name">Watch the<span> full movie</span></span>
+                <span className="brand-name">Watch the full movie <span>4K</span></span>
               </Link>
 
               <SearchBar />
@@ -111,7 +113,7 @@ export default function RootLayout({
                  <div className="logo-symbol" style={{ width: '36px', height: '36px' }}>
                     <svg viewBox="0 0 24 24" style={{ width: '18px' }}><path d="M8 5v14l11-7z"/></svg>
                  </div>
-                 <span className="brand-name" style={{ fontSize: '20px' }}>Watch the full movie</span>
+                  <span className="brand-name" style={{ fontSize: '20px' }}>Watch the full movie 4K</span>
               </div>
               <p style={{ color: 'var(--text-secondary)', maxWidth: '700px', margin: '0 auto 40px', fontSize: '15px' }}>
                 The ultimate destination for cinematic excellence. Stay ahead with official trailers, 

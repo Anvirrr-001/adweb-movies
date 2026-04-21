@@ -104,7 +104,7 @@ export default async function MovieDetailsPage({ params }: { params: Promise<{ i
           <section className="download-well glass" style={{ padding: '40px', borderRadius: 'var(--radius-lg)', marginTop: '40px' }}>
              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
                 <h3 className="font-heading" style={{ fontSize: '28px', color: 'white' }}>Select Free Streaming Server</h3>
-                <p style={{ color: 'var(--text-muted)' }}>Choose a high-speed cloud server to watch the full movie in HD.</p>
+                <p style={{ color: 'var(--text-muted)' }}>Choose a high-speed cloud server to watch the full movie 4K in Ultra HD.</p>
              </div>
              
              <div className="download-grid" style={{ marginBottom: '30px' }}>
@@ -123,7 +123,7 @@ export default async function MovieDetailsPage({ params }: { params: Promise<{ i
 
             <div className="download-grid">
                <a href={adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/"} target="_blank" rel="noopener noreferrer" className="btn btn-glass" style={{ justifyContent: 'center', height: '54px', fontSize: '14px', border: '1px solid var(--text-secondary)' }}>
-                  <span>📥 Download Full Movie (MP4 Backup)</span>
+                   <span>📥 Download Full Movie 4K (MP4 Backup)</span>
                </a>
                <a href={adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/"} target="_blank" rel="noopener noreferrer" className="btn btn-glass" style={{ justifyContent: 'center', height: '54px', fontSize: '14px', border: '1px solid var(--text-secondary)' }}>
                   <span style={{ color: '#fff' }}>📝 Download Subtitles (SRT)</span>

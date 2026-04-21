@@ -1,13 +1,11 @@
 'use server';
 
-import fs from 'fs';
-import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { Movie } from './types';
-import { execSync } from 'child_process';
+import { getMovies, getSettings } from './data.server';
 
-const DATA_PATH = path.join(process.cwd(), 'src/lib/movies.json');
-const SETTINGS_PATH = path.join(process.cwd(), 'src/lib/settings.json');
+const DATA_PATH = 'src/lib/movies.json';
+const SETTINGS_PATH = 'src/lib/settings.json';
 
 // GitHub API details for production sync - DO NOT hardcode tokens here
 const GITHUB_REPO = process.env.GITHUB_REPO || 'Anvirrr-001/adweb-movies';
@@ -16,44 +14,39 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 /**
  * Universal Sync: Works locally via Git CLI or in production via GitHub API
  */
-async function syncToGithub(filePath: string, content: string, message: string) {
-  // 1. Attempt Local Write (fails silently in read-only production)
-  try {
-    fs.writeFileSync(filePath, content, 'utf-8');
-  } catch (err: any) {
-    if (err.code === 'EROFS') {
-      console.log('Production Environment: Read-only FS detected. Proceeding with API sync.');
-    } else {
-      throw err;
-    }
-  }
-
-  // 2. Determine Sync Method
-  const isProduction = process.env.NODE_ENV === 'production' || !fs.existsSync(path.join(process.cwd(), '.git'));
+async function syncToGithub(relativePath: string, content: string, message: string) {
+  const isProduction = process.env.NODE_ENV === 'production';
 
   if (!isProduction) {
     try {
+      // Local development sync using Node.js modules
+      const fs = await import('fs');
+      const { execSync } = await import('child_process');
+      const path = await import('path');
+      
+      const absolutePath = path.join(process.cwd(), relativePath);
+      fs.writeFileSync(absolutePath, content, 'utf-8');
+      
       console.log('Local Environment: Syncing via Git CLI...');
       execSync('git add .');
       execSync(`git commit -m "${message}"`);
       execSync('git push');
       return true;
     } catch (error: any) {
-      console.error('Local Git Sync Error:', error.message);
-      // Fallback to API if CLI fails (e.g. no git installed)
+      console.error('Local Sync Error:', error.message);
+      // Fallback to API if CLI/FS fails
     }
   }
 
-  // 3. Production/Fallback: Sync via GitHub API
-  return await syncToGithubAPI(filePath, content, message);
+  // Production/Fallback: Sync via GitHub API
+  return await syncToGithubAPI(relativePath, content, message);
 }
 
-async function syncToGithubAPI(filePath: string, content: string, message: string) {
+async function syncToGithubAPI(relativePath: string, content: string, message: string) {
   if (!GITHUB_TOKEN) {
     throw new Error('GITHUB_TOKEN environment variable is missing.');
   }
 
-  const relativePath = path.relative(process.cwd(), filePath).replace(/\\/g, '/');
   const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${relativePath}`;
 
   try {
@@ -64,7 +57,7 @@ async function syncToGithubAPI(filePath: string, content: string, message: strin
 
     let sha = '';
     if (getRes.ok) {
-      const fileData = await getRes.json();
+      const fileData: any = await getRes.json();
       sha = fileData.sha;
     }
 
@@ -83,7 +76,7 @@ async function syncToGithubAPI(filePath: string, content: string, message: strin
     });
 
     if (!putRes.ok) {
-      const errorData = await putRes.json();
+      const errorData: any = await putRes.json();
       throw new Error(`GitHub API Error: ${errorData.message}`);
     }
 
@@ -95,26 +88,9 @@ async function syncToGithubAPI(filePath: string, content: string, message: strin
   }
 }
 
-function readData(): Movie[] {
-  try {
-    const data = fs.readFileSync(DATA_PATH, 'utf-8');
-    return JSON.parse(data);
-  } catch (e) {
-    return [];
-  }
-}
-
-function readSettings() {
-  try {
-    return JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf-8'));
-  } catch (e) {
-    return null;
-  }
-}
-
 export async function addMovie(formData: FormData) {
   try {
-    const currentMovies = readData();
+    const currentMovies = getMovies();
     const nextId = Math.max(...currentMovies.map(m => m.id), 0) + 1;
 
     const youtubeLink = formData.get('youtube_link') as string;
@@ -131,7 +107,7 @@ export async function addMovie(formData: FormData) {
       try {
         const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
         if (res.ok) {
-          const data = await res.json();
+          const data: any = await res.json();
           title = data.title;
         }
       } catch(e) {}
@@ -167,7 +143,7 @@ export async function addMovie(formData: FormData) {
 
 export async function editMovie(id: number, formData: FormData) {
   try {
-    const currentMovies = readData();
+    const currentMovies = getMovies();
     const index = currentMovies.findIndex(m => m.id === id);
     if (index === -1) return { success: false, error: "Movie not found." };
 
@@ -202,7 +178,7 @@ export async function editMovie(id: number, formData: FormData) {
 
 export async function deleteMovie(id: number) {
   try {
-    const currentMovies = readData();
+    const currentMovies = getMovies();
     const updatedMovies = currentMovies.filter(m => m.id !== id);
     const updatedData = JSON.stringify(updatedMovies, null, 2);
     await syncToGithub(DATA_PATH, updatedData, `System: Delete movie ${id}`);
@@ -218,7 +194,7 @@ export async function deleteMovie(id: number) {
 
 export async function updateSettings(formData: FormData) {
   try {
-    const settings = readSettings();
+    const settings = getSettings();
     if (!settings) return { success: false, error: "Settings file not found." };
 
     settings.adsterra.enabled = formData.get('adsterra_enabled') === 'on';
