@@ -1,4 +1,5 @@
 {
+  "//": "Deployment: 2026-04-22T00:49:00",
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "adweb-movies",
   "main": ".open-next/worker.js",
