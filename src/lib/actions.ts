@@ -19,10 +19,10 @@ async function syncToGithub(relativePath: string, content: string, message: stri
 
   if (!isProduction) {
     try {
-      // Local development sync using Node.js modules
-      const fs = await import('fs');
-      const { execSync } = await import('child_process');
-      const path = await import('path');
+      // Local development sync using Node.js modules hidden from Turbopack static analysis
+      const fs = eval('require("fs")');
+      const { execSync } = eval('require("child_process")');
+      const path = eval('require("path")');
       
       const absolutePath = path.join(process.cwd(), relativePath);
       fs.writeFileSync(absolutePath, content, 'utf-8');
@@ -33,7 +33,7 @@ async function syncToGithub(relativePath: string, content: string, message: stri
       execSync('git push');
       return true;
     } catch (error: any) {
-      console.error('Local Sync Error:', error.message);
+      console.error('Local Sync Error (Expected on Edge):', error.message);
       // Fallback to API if CLI/FS fails
     }
   }
