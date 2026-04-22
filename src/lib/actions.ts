@@ -12,33 +12,11 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'Anvirrr-001/adweb-movies';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 /**
- * Universal Sync: Works locally via Git CLI or in production via GitHub API
+ * Universal Sync: Works via GitHub API in all environments (Local & Cloudflare Edge)
  */
 async function syncToGithub(relativePath: string, content: string, message: string) {
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  if (!isProduction) {
-    try {
-      // Local development sync using Node.js modules hidden from Turbopack static analysis
-      const fs = eval('require("fs")');
-      const { execSync } = eval('require("child_process")');
-      const path = eval('require("path")');
-      
-      const absolutePath = path.join(process.cwd(), relativePath);
-      fs.writeFileSync(absolutePath, content, 'utf-8');
-      
-      console.log('Local Environment: Syncing via Git CLI...');
-      execSync('git add .');
-      execSync(`git commit -m "${message}"`);
-      execSync('git push');
-      return true;
-    } catch (error: any) {
-      console.error('Local Sync Error (Expected on Edge):', error.message);
-      // Fallback to API if CLI/FS fails
-    }
-  }
-
-  // Production/Fallback: Sync via GitHub API
+  // Production/Cloudflare: Sync via GitHub API
+  // Note: Local sync via Git CLI is removed to ensure Edge Runtime compatibility
   return await syncToGithubAPI(relativePath, content, message);
 }
 
