@@ -1,12 +1,12 @@
 {
   "adsterra": {
-    "enabled": true,
-    "direct_link": "https://www.profitablecpmratenetwork.com/m1cjk8yj6?key=78a3d882810e49a0aa8732621192cfe0",
+    "enabled": false,
+    "direct_link": "",
     "scripts": {
-      "social_bar": "<script src=\"https://pl29119351.profitablecpmratenetwork.com/5f/4d/f7/5f4df75ef11adb826857af24c44c0aca.js\"></script>",
-      "popunder": "<script src=\"https://pl29119348.profitablecpmratenetwork.com/76/0e/36/760e36781c8c8fc36d0f19e69c9b5188.js\"></script>",
-      "native_banner": "<script async=\"async\" data-cfasync=\"false\" src=\"https://pl29119349.profitablecpmratenetwork.com/0309ee57a4d158c7bfb3bdbe1dc72815/invoke.js\"></script>\n<div id=\"container-0309ee57a4d158c7bfb3bdbe1dc72815\"></div>",
-      "banner_300x250": "<script>\n  atOptions = {\n    'key' : '20fbc60adf96f7f9683bfafafb29c739',\n    'format' : 'iframe',\n    'height' : 250,\n    'width' : 300,\n    'params' : {}\n  };\n</script>\n<script src=\"https://www.highperformanceformat.com/20fbc60adf96f7f9683bfafafb29c739/invoke.js\"></script>"
+      "social_bar": "",
+      "popunder": "",
+      "native_banner": "",
+      "banner_300x250": ""
     },
     "verification_tag": ""
   },

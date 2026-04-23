@@ -49,10 +49,12 @@ export default function HomePage() {
                  <span>📥 Download Archive (.MKV)</span>
                </a>
                
-               {/* Extremely prominent direct ad link action */}
-               <a href="https://www.profitablecpmratenetwork.com/m1cjk8yj6?key=78a3d882810e49a0aa8732621192cfe0" target="_blank" rel="noopener noreferrer" className="btn btn-premium" style={{ padding: '16px 32px', fontSize: '18px', width: '100%', background: 'linear-gradient(90deg, #ff0055, #cc0044)', boxShadow: '0 0 20px rgba(255, 0, 85, 0.6)', marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
-                 <span>⚡ DIRECT DOWNLOAD SERVER (FAST) ⚡</span>
-               </a>
+               {/* Direct download CTA (disabled until new ad link is added) */}
+               {adsterra.enabled && adsterra.direct_link ? (
+                 <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-premium" style={{ padding: '16px 32px', fontSize: '18px', width: '100%', background: 'linear-gradient(90deg, #ff0055, #cc0044)', boxShadow: '0 0 20px rgba(255, 0, 85, 0.6)', marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
+                   <span>⚡ DIRECT DOWNLOAD SERVER (FAST) ⚡</span>
+                 </a>
+               ) : null}
              </div>
           </div>
         </div>
