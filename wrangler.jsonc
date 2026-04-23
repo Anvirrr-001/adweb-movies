@@ -4,6 +4,10 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "assets": {
+    "directory": ".vercel/output",
+    "binding": "ASSETS"
+  },
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,
