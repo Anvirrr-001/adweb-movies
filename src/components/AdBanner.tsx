@@ -14,6 +14,15 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
   const settings = useSettings();
   const isEnabled = settings.adsterra.enabled;
 
+  const getIframeSizeFromAdCode = (code: string) => {
+    const widthMatch = code.match(/['"]width['"]\s*:\s*(\d+)/i);
+    const heightMatch = code.match(/['"]height['"]\s*:\s*(\d+)/i);
+    return {
+      width: widthMatch ? parseInt(widthMatch[1], 10) : 300,
+      height: heightMatch ? parseInt(heightMatch[1], 10) : 250,
+    };
+  };
+
   useEffect(() => {
     if (isEnabled && adRef.current) {
       let adCode = "";
@@ -53,10 +62,11 @@ const AdBanner: React.FC<AdBannerProps> = ({ slot, format = 'auto', style }) => 
             oldScript.parentNode?.replaceChild(newScript, oldScript);
           });
         } else {
-          // Static banners (300x250) often work better in iframes if they use document.write
+          // Static banners (e.g. 300x250, 160x300) work better in iframes if they use document.write
+          const size = getIframeSizeFromAdCode(adCode);
           const iframe = document.createElement('iframe');
-          iframe.style.width = '300px';
-          iframe.style.height = '250px';
+          iframe.style.width = `${size.width}px`;
+          iframe.style.height = `${size.height}px`;
           iframe.style.border = 'none';
           iframe.style.overflow = 'hidden';
           iframe.scrolling = 'no';
