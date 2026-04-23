@@ -18,8 +18,6 @@ const inter = Inter({
   variable: '--font-inter'
 });
 
-export const runtime = 'edge';
-
 export async function generateMetadata() {
   const { adsterra, site } = getSettings();
   

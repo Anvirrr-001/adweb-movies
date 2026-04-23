@@ -1,11 +1,13 @@
 {
   "name": "adweb-movies",
-  "compatibility_date": "2026-04-21",
+  "account_id": "dca08fdfa44ac5488f33e8ae3bb08329",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-04-23",
   "compatibility_flags": [
     "nodejs_compat"
   ],
   "assets": {
-    "directory": ".vercel/output",
+    "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
   "observability": {
