@@ -16,15 +16,34 @@ export default function RevealScripts() {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("active");
+          observer.unobserve(entry.target);
         }
       });
     }, observerOptions);
 
-    const revealElements = document.querySelectorAll(".reveal:not(.active)");
-    revealElements.forEach((el) => observer.observe(el));
+    const observeElements = () => {
+      const revealElements = document.querySelectorAll(".reveal:not(.active)");
+      revealElements.forEach((el) => {
+        if (!el.hasAttribute('data-observed')) {
+          el.setAttribute('data-observed', 'true');
+          observer.observe(el);
+        }
+      });
+    };
+
+    observeElements();
+
+    const mutationObserver = new MutationObserver(() => {
+      observeElements();
+    });
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
 
     // Cleanup observer on unmount or path change
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
   }, [pathname]);
 
   return null;
