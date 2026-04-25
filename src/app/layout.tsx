@@ -21,6 +21,7 @@ const inter = Inter({
 export async function generateMetadata() {
   const { adsterra, site } = getSettings();
   const movies = getMovies();
+  // Use the first movie's backdrop as the default social sharing image
   const heroImage = movies[0]?.backdrop_path || "/images/frontpage.png";
   
   const verificationTagRaw = adsterra.enabled && adsterra.verification_tag ? adsterra.verification_tag : "";
@@ -38,22 +39,25 @@ export async function generateMetadata() {
 
   return {
     metadataBase: new URL(siteUrl),
-    title,
+    title: {
+      default: title,
+      template: `%s | ${site.title}`,
+    },
     description,
     alternates: {
-      canonical: siteUrl,
+      canonical: "/",
     },
     openGraph: {
       title,
       description,
-      url: siteUrl,
+      url: "/",
       siteName: site.title,
       images: [
         {
           url: absoluteOgImage,
-          width: 1024,
-          height: 576,
-          alt: site.title,
+          width: 1200,
+          height: 630,
+          alt: title,
         },
       ],
       locale: 'en_US',
@@ -70,6 +74,7 @@ export async function generateMetadata() {
     } : {}
   };
 }
+
 
 export default function RootLayout({
   children,
