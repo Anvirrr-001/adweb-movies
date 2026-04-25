@@ -1,6 +1,6 @@
 {
   "adsterra": {
-    "enabled": true,
+    "enabled": false,
     "direct_link": "",
     "scripts": {
       "social_bar": "",
