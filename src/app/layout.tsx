@@ -1,7 +1,7 @@
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { getSettings } from "@/lib/data.server";
+import { getMovies, getSettings } from "@/lib/data.server";
 import { SiteSettingsProvider } from "@/components/SiteSettingsProvider";
 import RevealScripts from "@/components/RevealScripts";
 import SearchBar from "@/components/SearchBar";
@@ -20,6 +20,8 @@ const inter = Inter({
 
 export async function generateMetadata() {
   const { adsterra, site } = getSettings();
+  const movies = getMovies();
+  const heroImage = movies[0]?.backdrop_path || "/images/frontpage.png";
   
   const verificationTagRaw = adsterra.enabled && adsterra.verification_tag ? adsterra.verification_tag : "";
   let verificationTag = "";
@@ -29,11 +31,10 @@ export async function generateMetadata() {
     verificationTag = match ? match[1] : verificationTagRaw.trim();
   }
 
-  const title = "Watch the full movie 4k free";
+  const title = "Watch The full movie 4k live and download";
   const description = site.description;
-  const siteUrl = "https://adweb-movies.tanvir302004.workers.dev";
-  const ogImage = "/images/frontpage.png";
-  const absoluteOgImage = `${siteUrl}${ogImage}`;
+  const siteUrl = "https://adweb-movies.pages.dev";
+  const absoluteOgImage = heroImage.startsWith("http") ? heroImage : `${siteUrl}${heroImage}`;
 
   return {
     metadataBase: new URL(siteUrl),
@@ -89,7 +90,7 @@ export default function RootLayout({
                 <div className="logo-symbol">
                   <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
-                <span className="brand-name">Watch the full movie <span>4k free</span></span>
+                <span className="brand-name">Watch The full movie <span>4k live and download</span></span>
               </Link>
 
               <SearchBar />
@@ -115,7 +116,7 @@ export default function RootLayout({
                  <div className="logo-symbol" style={{ width: '36px', height: '36px' }}>
                     <svg viewBox="0 0 24 24" style={{ width: '18px' }}><path d="M8 5v14l11-7z"/></svg>
                  </div>
-                  <span className="brand-name" style={{ fontSize: '20px' }}>Watch the full movie 4k free</span>
+                  <span className="brand-name" style={{ fontSize: '20px' }}>Watch The full movie 4k live and download</span>
               </div>
               <p style={{ color: 'var(--text-secondary)', maxWidth: '700px', margin: '0 auto 40px', fontSize: '15px' }}>
                 The ultimate destination for cinematic excellence. Stay ahead with official trailers, 

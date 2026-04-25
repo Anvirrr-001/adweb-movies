@@ -1,34 +1,31 @@
-'use server';
 
-import { revalidatePath } from 'next/cache';
+// import { revalidatePath } from 'next/cache'; // Disabled for static export compatibility
 import { Movie } from './types';
 import { getMovies, getSettings } from './data.server';
 
 const DATA_PATH = 'src/lib/movies.json';
 const SETTINGS_PATH = 'src/lib/settings.json';
 
-// GitHub API details for production sync - DO NOT hardcode tokens here
-const GITHUB_REPO = process.env.GITHUB_REPO || 'Anvirrr-001/adweb-movies';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+// GitHub API details for production sync
+// NEXT_PUBLIC_ prefix would be needed for these to be available on the client
+const GITHUB_REPO = process.env.NEXT_PUBLIC_GITHUB_REPO || process.env.GITHUB_REPO || 'Anvirrr-001/adweb-movies';
+const GITHUB_TOKEN = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
 
 /**
- * Universal Sync: Works via GitHub API in all environments (Local & Cloudflare Edge)
+ * Universal Sync: Works via GitHub API
  */
 async function syncToGithub(relativePath: string, content: string, message: string) {
-  // Production/Cloudflare: Sync via GitHub API
-  // Note: Local sync via Git CLI is removed to ensure Edge Runtime compatibility
   return await syncToGithubAPI(relativePath, content, message);
 }
 
 async function syncToGithubAPI(relativePath: string, content: string, message: string) {
   if (!GITHUB_TOKEN) {
-    throw new Error('GITHUB_TOKEN environment variable is missing.');
+    throw new Error('GITHUB_TOKEN is missing. If running on client, use NEXT_PUBLIC_GITHUB_TOKEN.');
   }
 
   const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${relativePath}`;
 
   try {
-    // Get current file info (for SHA)
     const getRes = await fetch(apiUrl, {
       headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
     });
@@ -39,7 +36,9 @@ async function syncToGithubAPI(relativePath: string, content: string, message: s
       sha = fileData.sha;
     }
 
-    // Update file
+    // Browser-compatible base64 encoding
+    const base64Content = btoa(unescape(encodeURIComponent(content)));
+
     const putRes = await fetch(apiUrl, {
       method: 'PUT',
       headers: {
@@ -48,7 +47,7 @@ async function syncToGithubAPI(relativePath: string, content: string, message: s
       },
       body: JSON.stringify({
         message,
-        content: Buffer.from(content).toString('base64'),
+        content: base64Content,
         sha: sha || undefined
       })
     });
@@ -58,12 +57,17 @@ async function syncToGithubAPI(relativePath: string, content: string, message: s
       throw new Error(`GitHub API Error: ${errorData.message}`);
     }
 
-    console.log(`API Sync Successful: ${relativePath}`);
     return true;
   } catch (error: any) {
-    console.error('GitHub API Sync Error:', error.message);
     throw new Error(`Database Synchronization Failed: ${error.message}`);
   }
+}
+
+// Helper to safely call revalidatePath
+function safeRevalidate(path: string) {
+  // revalidatePath is not available in client or static export
+  // in local dev with next dev, we could potentially use it if we kept 'use server'
+  // but for static export we omit it.
 }
 
 export async function addMovie(formData: FormData) {
@@ -110,9 +114,6 @@ export async function addMovie(formData: FormData) {
     const updatedData = JSON.stringify([...currentMovies, newMovie], null, 2);
     await syncToGithub(DATA_PATH, updatedData, "System: Add movie to registry");
 
-    revalidatePath('/');
-    revalidatePath('/movies');
-    revalidatePath('/dashboard');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -145,9 +146,6 @@ export async function editMovie(id: number, formData: FormData) {
     const updatedData = JSON.stringify(currentMovies, null, 2);
     await syncToGithub(DATA_PATH, updatedData, `System: Edit movie ${id}`);
 
-    revalidatePath(`/movie/${id}`);
-    revalidatePath('/');
-    revalidatePath('/dashboard');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -161,9 +159,6 @@ export async function deleteMovie(id: number) {
     const updatedData = JSON.stringify(updatedMovies, null, 2);
     await syncToGithub(DATA_PATH, updatedData, `System: Delete movie ${id}`);
 
-    revalidatePath('/');
-    revalidatePath('/movies');
-    revalidatePath('/dashboard');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -187,9 +182,6 @@ export async function updateSettings(formData: FormData) {
     const updatedSettings = JSON.stringify(settings, null, 2);
     await syncToGithub(SETTINGS_PATH, updatedSettings, "System: Update site configuration");
 
-    revalidatePath('/');
-    revalidatePath('/movies');
-    revalidatePath('/dashboard');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -204,3 +196,4 @@ function extractYoutubeId(url: string): string | undefined {
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : undefined;
 }
+

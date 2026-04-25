@@ -7,8 +7,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
-    "cf:build": "rimraf .next .open-next && cross-env NODE_OPTIONS=--max-old-space-size=4096 npx -y node@20 ./node_modules/@opennextjs/cloudflare/dist/cli/index.js build",
-    "deploy": "npm run cf:build && npx -y node@20 ./node_modules/wrangler/bin/wrangler.js deploy"
+    "cf:build": "next build",
+    "deploy": "npm run cf:build && npx -y wrangler pages deploy out"
   },
   "dependencies": {
     "next": "^16.2.4",

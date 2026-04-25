@@ -11,7 +11,7 @@ export default function HomePage() {
   if (allMovies.length === 0) return null;
 
   // Curate Content
-  const spotlightMovie = allMovies[1]; // Avengers: Doomsday
+  const spotlightMovie = allMovies[0];
   const trendingMovies = allMovies.slice(0, 10);
   const mostRatedMovies = [...allMovies].sort((a, b) => b.vote_average - a.vote_average).slice(0, 10);
   const comingSoonMovies = allMovies.filter(m => new Date(m.release_date) > new Date('2026-06-01')).slice(0, 10);
@@ -41,20 +41,16 @@ export default function HomePage() {
             <p className="hero-description" style={{ maxWidth: '600px', color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '18px', lineHeight: '1.6' }}>
                {spotlightMovie.overview || "Experience the next chapter in the cinematic multiverse. Direct high-speed download available for premium registry members."}
             </p>
-             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-               <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-premium" style={{ padding: '16px 32px', fontSize: '16px' }}>
+             <div className="hero-cta-stack">
+               <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-premium hero-cta-btn hero-cta-watch">
                  <span>▶ Watch Full Movie in 4K</span>
                </a>
-               <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-glass" style={{ padding: '16px 32px', fontSize: '16px' }}>
+               <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-glass hero-cta-btn hero-cta-archive">
                  <span>📥 Download Archive (.MKV)</span>
                </a>
-               
-               {/* Direct download CTA (disabled until new ad link is added) */}
-               {adsterra.enabled && adsterra.direct_link ? (
-                 <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-premium" style={{ padding: '16px 32px', fontSize: '18px', width: '100%', background: 'linear-gradient(90deg, #ff0055, #cc0044)', boxShadow: '0 0 20px rgba(255, 0, 85, 0.6)', marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
-                   <span>⚡ DIRECT DOWNLOAD SERVER (FAST) ⚡</span>
-                 </a>
-               ) : null}
+               <a href={downloadLink} target="_blank" rel="noopener noreferrer" className="btn btn-premium hero-cta-btn hero-cta-fast">
+                 <span>⚡ DIRECT DOWNLOAD SERVER (FAST) ⚡</span>
+               </a>
              </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ export default function MovieCard({ movie, downloadLink, featured }: MovieCardPr
   const year = movie.release_date.split('-')[0];
 
   return (
-    <div className="movie-card shadow-sm reveal">
+    <div className="movie-card shadow-sm">
       <div className="card-poster">
         <img 
           src={movie.poster_path} 
