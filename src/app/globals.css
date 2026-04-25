@@ -289,8 +289,14 @@ a {
 .reveal {
   opacity: 0;
   transform: translateY(30px);
-  transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-  filter: blur(10px);
+  transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  filter: blur(8px);
+}
+
+body:not([data-reveal-ready]) .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
 }
 
 .reveal.active {
@@ -358,7 +364,15 @@ a {
 
 /* --- Enhanced Movie Card --- */
 .movie-card {
+  position: relative;
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: var(--surface-raised);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.shadow-sm {
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
 }
 
 .movie-card:hover {

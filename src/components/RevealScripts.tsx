@@ -7,6 +7,7 @@ export default function RevealScripts() {
   const pathname = usePathname();
 
   useEffect(() => {
+    document.body.setAttribute('data-reveal-ready', 'true');
     const observerOptions = {
       threshold: 0.1,
       rootMargin: "0px 0px -50px 0px"

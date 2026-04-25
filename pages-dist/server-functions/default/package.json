@@ -1,0 +1,30 @@
+{
+  "name": "adweb-movies",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "next lint",
+    "cf:build": "rimraf .next .open-next && cross-env NODE_OPTIONS=--max-old-space-size=4096 npx -y node@20 ./node_modules/@opennextjs/cloudflare/dist/cli/index.js build",
+    "deploy": "npm run cf:build && npx -y node@20 ./node_modules/wrangler/bin/wrangler.js deploy"
+  },
+  "dependencies": {
+    "next": "^16.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "^1.8.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^16.2.4",
+    "cross-env": "^10.1.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5",
+    "wrangler": "^4.39.0"
+  }
+}

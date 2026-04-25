@@ -6,22 +6,19 @@ export const metadata = {
   description: "Browse our extensive database of the latest movie trailers and reviews.",
 };
 
-interface MoviesPageProps {
-  searchParams: Promise<{ q?: string; genre?: string }>;
-}
+import { Suspense } from "react";
 
-export default async function MoviesPage({ searchParams }: MoviesPageProps) {
-  const { q, genre } = await searchParams;
+export default function MoviesPage() {
   const allMovies = getMovies();
   const { adsterra } = getSettings();
   const downloadLink = adsterra.enabled && adsterra.direct_link ? adsterra.direct_link : "/";
 
   return (
-    <MoviesList
-      initialMovies={allMovies}
-      downloadLink={downloadLink}
-      initialQuery={q || ""}
-      initialGenre={genre ? parseInt(genre) : null}
-    />
+    <Suspense fallback={<div className="section-wrapper" style={{ paddingTop: '100px', textAlign: 'center' }}>Loading Registry...</div>}>
+      <MoviesList
+        initialMovies={allMovies}
+        downloadLink={downloadLink}
+      />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export', // Removed to allow Server Actions and dynamic dashboard
+  output: 'export',
   images: {
     unoptimized: true,
   },

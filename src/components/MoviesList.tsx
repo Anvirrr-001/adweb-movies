@@ -5,15 +5,18 @@ import Link from "next/link";
 import { Movie } from "@/lib/types";
 import AdBanner from "@/components/AdBanner";
 import MovieCard from "@/components/MovieCard";
+import { useSearchParams } from "next/navigation";
 
 interface MoviesListProps {
   initialMovies: Movie[];
   downloadLink: string;
-  initialQuery?: string;
-  initialGenre?: number | null;
 }
 
-export default function MoviesList({ initialMovies, downloadLink, initialQuery = "", initialGenre = null }: MoviesListProps) {
+export default function MoviesList({ initialMovies, downloadLink }: MoviesListProps) {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") || "";
+  const initialGenre = searchParams.get("genre") ? parseInt(searchParams.get("genre")!) : null;
+
   const [selectedGenre, setSelectedGenre] = useState<number | null>(initialGenre);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
 
