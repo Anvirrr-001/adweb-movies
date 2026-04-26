@@ -21,9 +21,17 @@ const inter = Inter({
 export async function generateMetadata() {
   const { adsterra, site } = getSettings();
   const movies = getMovies();
-  // Use the first movie's backdrop as the default social sharing image
-  const heroImage = movies[0]?.backdrop_path || "/images/frontpage.png";
   
+  // Site-wide metadata configuration
+  const siteUrl = "https://adweb-movies.pages.dev";
+  const title = site.title || "Watch The full movie 4k live and download";
+  const description = site.description || "The ultimate destination for cinematic excellence. Watch official trailers and download in 4K.";
+  
+  // Use a high-quality representative image for the site
+  // If we're on the home page, we prefer the branded frontpage image or the first movie's backdrop
+  const heroImage = "/images/frontpage.png"; 
+  const absoluteOgImage = `${siteUrl}${heroImage}`;
+
   const verificationTagRaw = adsterra.enabled && adsterra.verification_tag ? adsterra.verification_tag : "";
   let verificationTag = "";
   
@@ -32,11 +40,6 @@ export async function generateMetadata() {
     verificationTag = match ? match[1] : verificationTagRaw.trim();
   }
 
-  const title = "Watch The full movie 4k live and download";
-  const description = site.description;
-  const siteUrl = "https://adweb-movies.pages.dev";
-  const absoluteOgImage = heroImage.startsWith("http") ? heroImage : `${siteUrl}${heroImage}`;
-
   return {
     metadataBase: new URL(siteUrl),
     title: {
@@ -44,13 +47,22 @@ export async function generateMetadata() {
       template: `%s | ${site.title}`,
     },
     description,
+    keywords: ["movies", "4k", "download", "trailers", "cinema", "entertainment"],
+    authors: [{ name: "WATCH THE FULL MOVIE" }],
+    creator: "WATCH THE FULL MOVIE",
+    publisher: "WATCH THE FULL MOVIE",
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
     alternates: {
       canonical: "/",
     },
     openGraph: {
       title,
       description,
-      url: "/",
+      url: siteUrl,
       siteName: site.title,
       images: [
         {
@@ -68,6 +80,17 @@ export async function generateMetadata() {
       title,
       description,
       images: [absoluteOgImage],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
     other: verificationTag ? {
       'adsterra-verification': verificationTag
